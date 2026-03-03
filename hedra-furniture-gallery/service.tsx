@@ -5,7 +5,7 @@ import axios from 'axios';
 export const API_BASE_URL =
   window.location.hostname === "localhost"
     ? "http://localhost:8000/api/"
-    : "https://hedra-app-2.onrender.com/api/";
+    : "https://hedra-app-2-vuds.onrender.com/api/";
 
 
 /**
