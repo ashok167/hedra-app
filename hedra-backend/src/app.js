@@ -90,7 +90,7 @@ app.use(cors({
   origin: [
     'http://localhost:5173',       // local dev (Vite)
     'http://localhost:8080',       // local dev (React default)
-    'https://hedra-frontend-4oj9.onrender.com/'  // ✅ your Render frontend
+    'https://hedra-frontend-4oj9.onrender.com'  // ✅ your Render frontend
   ],
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
