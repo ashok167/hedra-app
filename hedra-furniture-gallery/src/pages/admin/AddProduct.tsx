@@ -157,7 +157,7 @@ export default function AddProduct() {
         description: `"${result.name}" has been successfully added.`,
       });
 
-      navigate('admin/products');
+      navigate('/admin/products');
       window.location.reload();
     } catch (error: any) {
       toast({
