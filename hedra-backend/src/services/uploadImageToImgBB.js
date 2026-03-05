@@ -9,7 +9,7 @@ const uploadImageToImgBB = async (imagePath) => {
 
   try {
     // Make a POST request to ImgBB's upload endpoint
-    const response = await axios.post('https://api.imgbb.com/1/upload?key=34e47b6076eb3203f89a245b62e19b35', form, {
+    const response = await axios.post('https://api.imgbb.com/1/upload?key=546f25efe466c82a09b6cf8c6cabb4de', form, {
       headers: form.getHeaders(),
     });
 
