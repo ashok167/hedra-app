@@ -312,31 +312,42 @@ const NavLinks = ({
 };
 
 const DesktopUtilities = () => (
-  <div className="hidden md:flex items-center gap-4">
-    <div className=" pt-1 flex flex-col gap-1 items-center leading-tight">
+  <div className="flex items-center gap-4">
 
-  {/* Mobile Number */}
-  <a
-    href="tel:+919962452447"
-    className="flex items-center gap-2 text-sm mr-3 text-gray-700"
-  >
-    <Phone className="h-4 w-4" />
-    <span>+91 99624 52447</span>
-  </a>
+    {/* Phone & Email → Only Desktop */}
+    <div className="hidden lg:flex pt-1 flex-col gap-1 items-start leading-tight whitespace-nowrap">
 
-  {/* Email */}
-  <a
-    href="mailto:info@edendek.com"
-    className="flex items-center gap-2 text-sm text-gray-700 -mt-1"
-  >
-    <Mail className="h-4 w-4 ml-1" />
-    <span>info@edendek.com</span>
-  </a>
+      {/* Mobile Number */}
+      <a
+        href="tel:+919962452447"
+        className="flex items-center gap-2 text-sm mr-3 text-gray-700"
+      >
+        <Phone className="h-4 w-4" />
+        <span>+91 99624 52447</span>
+      </a>
 
-</div>
+      {/* Email */}
+      <a
+        href="mailto:info@edendek.com"
+        className="flex items-center gap-2 text-sm text-gray-700 -mt-1 mr-2"
+      >
+        <Mail className="h-4 w-4 ml-1" />
+        <span>info@edendek.com</span>
+      </a>
+
+    </div>
+
+    {/* Admin Button → Always Visible */}
     <Link to="/admin">
-      <Button variant="outline" size="sm" className="w-full  text-[#14294C]  hover:text-[#14294C]">Admin</Button>
+      <Button
+        variant="outline"
+        size="sm"
+        className="text-[#14294C] hover:text-[#14294C]"
+      >
+        Admin
+      </Button>
     </Link>
+
   </div>
 );
 
