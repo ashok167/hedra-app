@@ -139,13 +139,12 @@ app.use('/api/projects', projectRoutes);
 app.use('/api/contact', contactRoutes);
 app.use('/api/catalogue',catalogueRoutes)
 
-// Serve frontend build
+// Serve frontend
 const FRONTEND_DIR = path.join(__dirname, "../dist");
 
 app.use(express.static(FRONTEND_DIR));
 
-// React router support
-app.get("/*", (req, res) => {
+app.use((req, res) => {
   res.sendFile(path.join(FRONTEND_DIR, "index.html"));
 });
 
