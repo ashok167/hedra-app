@@ -131,10 +131,6 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 
-// Root route
-app.get("/", (req, res) => {
-  res.send("Hedra Furniture API running successfully 🚀");
-});
 
 // ✅ 4. API Routes
 app.use('/api/auth', authRoutes);
