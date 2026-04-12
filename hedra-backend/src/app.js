@@ -122,10 +122,21 @@ app.get('/__debug/uploads', (req, res) => {
 });
 
 // ✅ Security / logging / body parsers
-app.use(helmet({
-  // ensure helmet doesn't force same-origin for static assets
-  crossOriginResourcePolicy: { policy: 'cross-origin' },
-}));
+app.use(
+  helmet({
+    crossOriginResourcePolicy: { policy: "cross-origin" },
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        imgSrc: [
+          "'self'",
+          "data:",
+          "https://images.unsplash.com"
+        ],
+      },
+    },
+  })
+);
 app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
