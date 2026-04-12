@@ -122,12 +122,12 @@ export default function ChairCatalog() {
                     imagesByBase[`${chair.name}-hover`] ??
                     imagesByBase["sofa1"] ??
                     undefined;
-                  const API_BASE = import.meta.env.VITE_API_BASE_URL || "https://hedra-app-2-vuds.onrender.com";
+                  const API_BASE = import.meta.env.VITE_API_BASE_URL || "https://www.edendek.com";
 
                   const pdfHref = chair.pdfUrl
                     ? chair.pdfUrl.startsWith("http")
                       ? chair.pdfUrl
-                      : `https://hedra-app-2-vuds.onrender.com${chair.pdfUrl.startsWith("/") ? "" : "/"}${chair.pdfUrl}`
+                      : `https://www.edendek.com${chair.pdfUrl.startsWith("/") ? "" : "/"}${chair.pdfUrl}`
                     : undefined;
 
                   return (
