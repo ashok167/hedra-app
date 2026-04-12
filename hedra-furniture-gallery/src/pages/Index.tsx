@@ -178,22 +178,24 @@ const Index = () => {
       description:
         "Where tradition meets innovation. Discover our collection of handcrafted furniture that transforms spaces into experiences.",
     },
-    {
-      id: 2,
-      image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c",
-      title: "Inspired Living Spaces",
-      highlight: "Designed for You",
-      description:
-        "From modern minimalism to classic charm, our furniture reflects your personality and lifestyle.",
-    },
-    {
-      id: 4,
-      image: "https://images.unsplash.com/photo-1524758631624-e2822e304c36", // replace with your image URL or local import
-      title: "Modern Comfort",
-      highlight: "Redefined",
-      description:
-        "Experience unmatched comfort with our modern furniture designs, built to suit your lifestyle.",
-    },
+   {
+    id: 2,
+    image:
+      "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1920&q=80",
+    title: "Inspired Living Spaces",
+    highlight: "Designed for You",
+    description:
+      "From modern minimalism to classic charm, our furniture reflects your personality and lifestyle.",
+  },
+  {
+    id: 4,
+    image:
+      "https://images.unsplash.com/photo-1524758631624-e2822e304c36?auto=format&fit=crop&w=1920&q=80",
+    title: "Modern Comfort",
+    highlight: "Redefined",
+    description:
+      "Experience unmatched comfort with our modern furniture designs.",
+  },
   ];
 
   const clientLogos = [
