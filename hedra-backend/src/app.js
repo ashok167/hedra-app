@@ -90,7 +90,8 @@ app.use(cors({
   origin: [
     'http://localhost:5173',       // local dev (Vite)
     'http://localhost:8080',       // local dev (React default)
-    'https://hedra-frontend-4oj9.onrender.com'  // ✅ your Render frontend
+    'https://hedra-frontend-4oj9.onrender.com',  // ✅ your Render frontend
+    'https://www.edendek.com'
   ],
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
@@ -129,6 +130,11 @@ app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+
+// Root route
+app.get("/", (req, res) => {
+  res.send("Hedra Furniture API running successfully 🚀");
+});
 
 // ✅ 4. API Routes
 app.use('/api/auth', authRoutes);
