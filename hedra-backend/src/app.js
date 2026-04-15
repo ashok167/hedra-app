@@ -90,13 +90,20 @@ app.use(cors({
   origin: [
     'http://localhost:5173',       // local dev (Vite)
     'http://localhost:8080',       // local dev (React default)
-    // 'https://hedra-frontend-4oj9.onrender.com', 
     'https://www.edendek.com'
   ],
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true,
 }));
+
+// ✅ ADD THIS HERE
+app.use((req, res, next) => {
+  if (req.headers.host.includes("onrender.com")) {
+    return res.redirect(301, "https://www.edendek.com");
+  }
+  next();
+});
 
 
 
