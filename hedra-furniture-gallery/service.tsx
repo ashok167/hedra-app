@@ -2,10 +2,7 @@ import axios from 'axios';
 
 // Base URL for API requests (adjust it as per your backend URL)
 // ✅ Auto-detect environment (local vs production)
-export const API_BASE_URL =
-  window.location.hostname === "localhost"
-    ? "http://localhost:8000/api/"
-    : "https://www.edendek.com/api/";
+export const API_BASE_URL = "https://www.edendek.com/api/";
 
 
 /**
