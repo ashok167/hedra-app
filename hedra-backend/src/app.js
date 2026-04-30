@@ -138,7 +138,9 @@ app.use(
         imgSrc: [
           "'self'",
           "data:",
-          "https://images.unsplash.com"
+          "https://images.unsplash.com",
+          "https://i.ibb.co",              // ✅ ADD THIS
+          "https://res.cloudinary.com"     // ✅ (future-safe if you use Cloudinary)
         ],
       },
     },
