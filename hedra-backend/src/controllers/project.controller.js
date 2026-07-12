@@ -1,51 +1,186 @@
 import prisma from '../config/db.js';
 
-export const createProject = async (req, res) => {
-  const { title, description } = req.body;
-  const imageUrl = req.file ? `/uploads/${req.file.filename}` : null;
+export const getProjects = async (req, res) => {
+  try {
+    const { type } = req.query;
 
-  const project = await prisma.project.create({
-    data: {
-      title,
-      description,
-      imageUrl,
-    },
-  });
+    const projects = await prisma.project.findMany({
+      where: type
+        ? {
+            projectType: type,
+          }
+        : {},
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
 
-  res.status(201).json(project);
-};
-
-export const getAllProjects = async (req, res) => {
-  const projects = await prisma.project.findMany({ orderBy: { createdAt: 'desc' } });
-  res.json(projects);
+    res.status(200).json(projects);
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
 };
 
 export const getProjectById = async (req, res) => {
-  const { id } = req.params;
-  const project = await prisma.project.findUnique({ where: { id } });
-  if (!project) return res.status(404).json({ message: 'Project not found' });
-  res.json(project);
+  try {
+    const project = await prisma.project.findUnique({
+      where: {
+        id: req.params.id,
+      },
+    });
+
+    res.status(200).json(project);
+  } catch (error) {
+    console.log(error);
+
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
 };
 
+export const createProject = async (req, res) => {
+  try {
+    const imageUrls = req.files
+      ? req.files.map(file => `/uploads/${file.filename}`)
+      : [];
+
+    const project = await prisma.project.create({
+      data: {
+        projectType: req.body.projectType,
+        title: req.body.title,
+        description: req.body.description,
+        client: req.body.client,
+        year: req.body.year,
+
+        // String field
+        imageUrl: JSON.stringify(imageUrls),
+      },
+    });
+
+    res.status(201).json({
+      success: true,
+      project,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
 export const updateProject = async (req, res) => {
-  const { id } = req.params;
-  const { title, description } = req.body;
-  const imageUrl = req.file ? `/uploads/${req.file.filename}` : undefined;
+  try {
+    const updateData = {
+      projectType: req.body.projectType,
+      title: req.body.title,
+      description: req.body.description,
+      client: req.body.client,
+      year: req.body.year,
+    };
 
-  const project = await prisma.project.update({
-    where: { id },
-    data: {
-      title,
-      description,
-      ...(imageUrl && { imageUrl }),
-    },
-  });
+   let existingImages = [];
 
-  res.json(project);
+try {
+  existingImages = JSON.parse(
+    req.body.existingImages || "[]"
+  );
+} catch {
+  existingImages = [];
+}
+
+const newImages =
+  req.files?.map(
+    (file) => `/uploads/${file.filename}`
+  ) || [];
+
+updateData.imageUrl = JSON.stringify([
+  ...existingImages,
+  ...newImages,
+]);
+
+    const project = await prisma.project.update({
+      where: {
+        id: req.params.id,
+      },
+      data: updateData,
+    });
+
+    res.status(200).json({
+      success: true,
+      project,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
 };
 
 export const deleteProject = async (req, res) => {
-  const { id } = req.params;
-  await prisma.project.delete({ where: { id } });
-  res.json({ message: 'Project deleted' });
+  try {
+    await prisma.project.delete({
+      where: {
+        id: req.params.id,
+      },
+    });
+
+    res.status(200).json({
+      success: true,
+      message: "Project deleted successfully",
+    });
+  } catch (error) {
+    console.error(error);
+
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+
+export const getHomeProjects = async (req, res) => {
+  try {
+    const projects = await prisma.project.findMany({
+      where: {
+        projectType: "Home",
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+
+    res.status(200).json(projects);
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+export const getOfficeProjects = async (req, res) => {
+  try {
+    const projects = await prisma.project.findMany({
+      where: {
+        projectType: "Office",
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+
+    res.status(200).json(projects);
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
 };

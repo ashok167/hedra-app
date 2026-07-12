@@ -49,7 +49,7 @@ import uploadImageToImgBB from '../services/uploadImageToImgBB.js';
 
 export const createProduct = async (req, res) => {
   try {
-    const { name, description, category, price, tags, specifications } = req.body;
+    const { name, description, category, price, tags, specifications, customizations, } = req.body;
 
     // Get the last product's ID
     const lastProduct = await prisma.product.findFirst({
@@ -98,6 +98,19 @@ export const createProduct = async (req, res) => {
         ? JSON.stringify(parsedSpecifications)
         : null;
 
+         // ------ CUSTOMIZATIONS ------
+    let parsedCustomizations = [];
+    try {
+      parsedCustomizations =
+        typeof customizations === "string"
+          ? JSON.parse(customizations)
+          : Array.isArray(customizations)
+          ? customizations
+          : [];
+    } catch (_) {
+      parsedCustomizations = [];
+    }
+
     // ------ CREATE ------
     const product = await prisma.product.create({
       data: {
@@ -105,10 +118,14 @@ export const createProduct = async (req, res) => {
         name,
         description,
         category,
-        price: parseFloat(price),
+       price,
         tags: parsedTags,
         imageUrl: imageUrlField,
         specifications: specificationsString,
+        customizations:
+          parsedCustomizations.length > 0
+            ? parsedCustomizations
+            : undefined,
       },
     });
 
@@ -208,6 +225,7 @@ export const updateProduct = async (req, res) => {
       price,
       tags,
       specifications,
+        customizations,
       replaceImages,   // legacy support
       deleteImages,    // legacy support
       imagesToKeep,    // <- from FE
@@ -296,15 +314,32 @@ export const updateProduct = async (req, res) => {
         ? JSON.stringify(parsedSpecifications)
         : null;
 
+        let parsedCustomizations = [];
+
+try {
+  parsedCustomizations =
+    typeof customizations === "string"
+      ? JSON.parse(customizations)
+      : Array.isArray(customizations)
+      ? customizations
+      : [];
+} catch (_) {
+  parsedCustomizations = [];
+}
+
     const updatedProduct = await prisma.product.update({
       where: { id },
       data: {
         name,
         description,
         category,
-        price: price != null ? parseFloat(price) : existingProduct.price,
+       price: price ?? existingProduct.price,
         tags: parsedTags,
         specifications: specificationsString,
+          customizations:
+      parsedCustomizations.length > 0
+        ? parsedCustomizations
+        : null,
         imageUrl: imageUrlField,
         bestSeller: typeof req.body.bestSeller !== "undefined" ? String(req.body.bestSeller) === "true" : existingProduct.bestSeller,
         // ...(typeof featured !== "undefined" ? { featured: String(featured) === "true" } : {}),

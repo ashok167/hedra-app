@@ -28,20 +28,14 @@ model Product {
   description String
   category    String
   tags        String[]
-  price       Float
+  price       String
   imageUrl    String
   specifications Json? 
+  customizations Json?
   bestSeller     Boolean  @default(false)
   createdAt   DateTime @default(now())
 }
 
-model Project {
-  id          String   @id @default(uuid())
-  title       String
-  description String
-  imageUrl    String
-  createdAt   DateTime @default(now())
-}
 
 model ContactMessage {
   id        String   @id @default(uuid())
@@ -67,4 +61,47 @@ model Catalogue {
   pdfUrl       String?                    // brochure/spec (not required for BRAND_LOGO)
   brandLogoUrl String?                    // optional brand logo image
   createdAt    DateTime      @default(now())
+}
+
+model Project {
+ id           String @id @default(uuid())
+  projectType String   // Home | Office
+  title       String
+  description String
+  imageUrl       String
+  year        String?
+  client      String?
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("projects")
+}
+
+model Blog {
+  id          Int      @id @default(autoincrement())
+  title       String
+  slug        String   @unique
+  author      String
+  tag         String?
+  content     String
+  isPublished Boolean  @default(true)
+
+  images      String[]
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+
+model Testimonial {
+  id          Int      @id @default(autoincrement())
+  clientName  String
+  designation String
+  company     String
+  message     String
+  isPublished Boolean  @default(true)
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
