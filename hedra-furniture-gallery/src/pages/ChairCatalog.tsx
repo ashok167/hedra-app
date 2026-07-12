@@ -3,6 +3,7 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { Card } from "@/components/ui/card";
 import { motion, easeOut } from "framer-motion";
+import { Share2 } from "lucide-react";
 import { apiGetRequest } from "../../service";
 
 /** 🔎 Import all preview images from assets (for fallback use) */
@@ -41,6 +42,7 @@ export default function ChairCatalog() {
   const [chairs, setChairs] = useState<CatalogueItem[]>([]);
   const [loading, setLoading] = useState(true);
 
+
   useEffect(() => {
     const fetchChairs = async () => {
       try {
@@ -70,11 +72,29 @@ export default function ChairCatalog() {
     (e.currentTarget as HTMLImageElement).style.display = "none";
   };
 
-  const BASE_URL = "http://localhost:8000"; // ✅ for relative URLs
+  const FILE_BASE_URL = import.meta.env.VITE_FILE_BASE_URL;
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
+  const handleShare = async (title: string, url: string) => {
+  try {
+    if (navigator.share) {
+      await navigator.share({
+        title,
+        text: `Check out this catalogue: ${title}`,
+        url,
+      });
+    } else {
+      await navigator.clipboard.writeText(url);
+      alert("Catalogue link copied to clipboard!");
+    }
+  } catch (err) {
+    console.log("Share cancelled");
+  }
+};
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Header />
+      {/* <Header /> */}
       <main className="flex-1">
         {/* Header Section */}
         <section className="bg-white py-20">
@@ -115,20 +135,20 @@ export default function ChairCatalog() {
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
                 {chairs.map((chair) => {
                   const image =
-                    chair.imageUrl?.startsWith("http")
-                      ? chair.imageUrl
-                      : `${BASE_URL}${chair.imageUrl || ""}`;
+  chair.imageUrl?.startsWith("http")
+    ? chair.imageUrl
+    : `${FILE_BASE_URL}${chair.imageUrl || ""}`;
                   const hoverImage =
                     imagesByBase[`${chair.name}-hover`] ??
                     imagesByBase["sofa1"] ??
                     undefined;
-                  const API_BASE = import.meta.env.VITE_API_BASE_URL || "https://www.edendek.com";
+                  // const API_BASE = import.meta.env.VITE_API_BASE_URL || "https://www.edendek.com";
 
-                  const pdfHref = chair.pdfUrl
-                    ? chair.pdfUrl.startsWith("http")
-                      ? chair.pdfUrl
-                      : `https://www.edendek.com${chair.pdfUrl.startsWith("/") ? "" : "/"}${chair.pdfUrl}`
-                    : undefined;
+                 const pdfHref = chair.pdfUrl
+  ? chair.pdfUrl.startsWith("http")
+    ? chair.pdfUrl
+    : `${FILE_BASE_URL}${chair.pdfUrl.startsWith("/") ? "" : "/"}${chair.pdfUrl}`
+  : undefined;
 
                   return (
                     <Card
@@ -154,22 +174,34 @@ export default function ChairCatalog() {
                       </div>
 
 
-                      <div className="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black/70 to-transparent p-4 flex flex-col">
-                        <span className="text-white text-lg font-semibold mb-2">
-                          {chair.name}
-                        </span>
-                        {pdfHref && (
-                          <a
-                            href={pdfHref}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="bg-gradient-to-b from-red-700 to-black text-white text-sm px-4 py-2 rounded-md w-fit hover:opacity-90 transition"
-                            title="Open PDF in a new tab"
-                          >
-                            DOWNLOAD
-                          </a>
-                        )}
-                      </div>
+                     <div className="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black/70 to-transparent p-4">
+  <span className="text-white text-lg font-semibold block mb-3">
+    {chair.name}
+  </span>
+
+  <div className="flex items-center justify-between">
+    {pdfHref && (
+      <a
+        href={pdfHref}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="bg-gradient-to-b from-red-700 to-black text-white text-sm px-4 py-2 rounded-md hover:opacity-90 transition"
+      >
+        DOWNLOAD
+      </a>
+    )}
+
+    {pdfHref && (
+      <button
+        onClick={() => handleShare(chair.name, pdfHref)}
+        className="bg-white/20 backdrop-blur-sm hover:bg-white/30 transition rounded-full p-2 text-white"
+        title="Share Catalogue"
+      >
+        <Share2 size={20} />
+      </button>
+    )}
+  </div>
+</div>
                     </Card>
                   );
                 })}
@@ -178,7 +210,7 @@ export default function ChairCatalog() {
           </div>
         </section>
       </main>
-      <Footer />
+      {/* <Footer /> */}
     </div>
   );
 }

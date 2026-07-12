@@ -3,6 +3,7 @@ import axios from 'axios';
 // Base URL for API requests (adjust it as per your backend URL)
 // ✅ Auto-detect environment (local vs production)
 export const API_BASE_URL = "https://www.edendek.com/api/";
+// export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 
 /**

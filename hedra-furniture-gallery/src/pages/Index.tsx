@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useEffect, useState, } from 'react';
+import { useRef } from "react";
+import { Link ,useLocation} from 'react-router-dom';
 import { ArrowRight, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -7,13 +8,14 @@ import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { useProducts } from '@/contexts/ProductContext';
 import heroImage from '@/assets/hero-furniture.jpg';
+import heroVideo from "@/assets/hero-video.mp4";
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
 import 'swiper/css/autoplay';
 import "swiper/css/navigation";
 import { Autoplay, Navigation } from 'swiper/modules';
 import FadeInSection from '@/components/ui/FadeInSection';
-import { ChevronRight } from "lucide-react";
+import { ChevronRight,ChevronLeft } from "lucide-react";
 import manufacturerIcon from "../assets/icons/manufacturing.png";
 import wholesalerIcon from "../assets/icons/shopping_7157797.png";
 import distributorIcon from "../assets/icons/delivery-truck_2127856.png"; // e.g., a truck
@@ -66,14 +68,18 @@ const resolveCategoryName = (candidates: string[], all: string[]): string | null
 const PREVIEW_DEFS: PreviewDef[] = [
   // ⬇️ Sofas now matches any category that CONTAINS "sofa"
   { label: "Sofas", candidates: ["sofa"], mode: "includes" },
-  { label: "Boss Chairs", candidates: ["boss-chairs", "boss-chairs"] },
-  { label: "Mesh Chairs", candidates: ["high-back-mesh-chairs", "high-back-mesh-chairs"] },
+   { label: "Executive Chairs", candidates: ["executive-chairs"], mode: "includes" },
+
+   { label: "Workstation Chairs", candidates: ["workstation-chairs"], mode: "includes" },
   { label: "Cafe Chairs", candidates: ["cafe-chairs", "cafe-chairs"] },
-  { label: "Beds", candidates: ["bed"], mode: "includes" },
-  { label: "Office Lounge Chairs", candidates: ["lounge-chairs", "lounge-chairs"] },
-  { label: "Bar Stools", candidates: ["bar-stools", "bar-stools"] },
-  { label: "Desk Chairs", candidates: ["office-tables-work-desks"], mode: "includes" },
-  { label: "Boss Tables", candidates: ["office-tables-boss"], mode: "includes" },
+  { label: "Beds", candidates: ["beds"], mode: "includes" },
+  { label: " Lounge Chairs", candidates: ["lounge-chairs"], mode: "includes" },
+
+ { label: "Bar Stools", candidates: ["bar-stools"], mode: "includes" },
+
+  { label: "Study Chairs", candidates: ["study-chairs"], mode: "includes" },
+
+  { label: "Boss Tables", candidates: ["boss-tables"], mode: "includes" },
 ];
 
 
@@ -102,6 +108,12 @@ const Index = () => {
   const [brandLogos, setBrandLogos] = useState<any[]>([]);
   const [logoLoading, setLogoLoading] = useState(false);
   const [logoError, setLogoError] = useState<string | null>(null);
+  const location = useLocation();
+  const [testimonials, setTestimonials] = useState<any[]>([]);
+const [testimonialLoading, setTestimonialLoading] = useState(false);
+const [testimonialError, setTestimonialError] = useState<string | null>(null);
+const prevRef = useRef<HTMLButtonElement>(null);
+const nextRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     (async () => {
@@ -172,30 +184,31 @@ const Index = () => {
   const heroSlides = [
     {
       id: 1,
-      image: heroImage,
+      type: "video",
+      video: heroVideo,
       title: "Crafting Excellence in",
       highlight: "Furniture Design",
       description:
         "Where tradition meets innovation. Discover our collection of handcrafted furniture that transforms spaces into experiences.",
     },
-   {
-    id: 2,
-    image:
-      "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1920&q=80",
-    title: "Inspired Living Spaces",
-    highlight: "Designed for You",
-    description:
-      "From modern minimalism to classic charm, our furniture reflects your personality and lifestyle.",
-  },
-  {
-    id: 4,
-    image:
-      "https://images.unsplash.com/photo-1524758631624-e2822e304c36?auto=format&fit=crop&w=1920&q=80",
-    title: "Modern Comfort",
-    highlight: "Redefined",
-    description:
-      "Experience unmatched comfort with our modern furniture designs.",
-  },
+    {
+      id: 2,
+      image:
+        "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1920&q=80",
+      title: "Inspired Living Spaces",
+      highlight: "Designed for You",
+      description:
+        "From modern minimalism to classic charm, our furniture reflects your personality and lifestyle.",
+    },
+    {
+      id: 4,
+      image:
+        "https://images.unsplash.com/photo-1524758631624-e2822e304c36?auto=format&fit=crop&w=1920&q=80",
+      title: "Modern Comfort",
+      highlight: "Redefined",
+      description:
+        "Experience unmatched comfort with our modern furniture designs.",
+    },
   ];
 
   const clientLogos = [
@@ -316,46 +329,66 @@ const Index = () => {
   }
 
 
-  const renderPreviewItem = (def: PreviewDef) => {
-    const prods = findPreviewProducts(def, categories, products, getProductsByCategory);
+// Maps a preview label to { parent route, subcategory slug to preselect }
+const PREVIEW_SUBCATEGORY_ROUTES: Record<string, { parent: string; subcategory: string }> = {
+  "Executive Chairs":   { parent: "office-chairs", subcategory: "executive-chairs" },
+  "Workstation Chairs": { parent: "office-chairs", subcategory: "workstation-chairs" },
+  " Lounge Chairs":     { parent: "office-chairs", subcategory: "lounge-chairs" },
+  "Boss Tables":        { parent: "office-tables", subcategory: "boss-tables" },
+};
 
-    // choose the first product with a usable image
-    const firstWithImg = prods.find(p => !!getFirstImageFromProduct(p, FILE_BASE));
-    const img = firstWithImg ? getFirstImageFromProduct(firstWithImg, FILE_BASE) : null;
+const renderPreviewItem = (def: PreviewDef) => {
+  const prods = findPreviewProducts(def, categories, products, getProductsByCategory);
+  const firstWithImg = prods.find(p => !!getFirstImageFromProduct(p, FILE_BASE));
+  const img = firstWithImg ? getFirstImageFromProduct(firstWithImg, FILE_BASE) : null;
 
-    // ALWAYS go to the category route (no /catalog?query=...)
-    const slug = resolveCategorySlugFor(def, categories);
-    const href = categories?.length ? `/${encodeURIComponent(slug)}` : "#";
-    const clickable = !!categories?.length;
+  const slug = resolveCategorySlugFor(def, categories);
+  let href = "#";
+  let linkState: any = undefined;
 
-    return (
-      <Link
-        key={def.label}
-        to={href}
-        className="group flex flex-col items-center"
-        onClick={(e) => { if (!clickable) e.preventDefault(); }}
-        aria-label={clickable ? `View ${def.label}` : `${def.label} (coming soon)`}
-      >
-        <div className="p-1 rounded-full bg-white shadow-sm ring-1 ring-gray-200">
-          <div className="h-36 w-36 sm:h-40 sm:w-40 rounded-full overflow-hidden ring-1 ring-gray-300 group-hover:ring-gray-400 transition">
-            {img ? (
-              <img
-                src={img}
-                alt={def.label}
-                className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-300"
-                loading="lazy"
-              />
-            ) : (
-              <div className="h-full w-full bg-gradient-to-br from-gray-100 to-gray-200" />
-            )}
-          </div>
+  if (def.label === "Sofas") {
+    href = "/sofa";
+  } else if (def.label === "Beds") {
+    href = "/beds";
+  } else if (PREVIEW_SUBCATEGORY_ROUTES[def.label]) {
+    const { parent, subcategory } = PREVIEW_SUBCATEGORY_ROUTES[def.label];
+    href = `/${parent}`;
+    linkState = { selectedSubcategory: subcategory };
+  } else {
+    href = categories?.length ? `/${encodeURIComponent(slug)}` : "#";
+  }
+
+  const clickable = !!categories?.length;
+
+  return (
+    <Link
+      key={def.label}
+      to={href}
+      state={linkState}
+      className="group flex flex-col items-center"
+      onClick={(e) => { if (!clickable) e.preventDefault(); }}
+      aria-label={clickable ? `View ${def.label}` : `${def.label} (coming soon)`}
+    >
+      <div className="p-1 rounded-full bg-white shadow-sm ring-1 ring-gray-200">
+        <div className="h-[clamp(7.5rem,38vw,9rem)] w-[clamp(7.5rem,38vw,9rem)] sm:h-40 sm:w-40 rounded-full overflow-hidden ring-1 ring-gray-300 group-hover:ring-gray-400 transition">
+          {img ? (
+            <img
+              src={img}
+              alt={def.label}
+              className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-300"
+              loading="lazy"
+            />
+          ) : (
+            <div className="h-full w-full bg-gradient-to-br from-gray-100 to-gray-200" />
+          )}
         </div>
-        <span className="mt-3 text-sm sm:text-base font-medium text-[#14294C] text-center">
-          {def.label}
-        </span>
-      </Link>
-    );
-  };
+      </div>
+      <span className="mt-3 max-w-[9rem] text-sm sm:text-base font-medium leading-tight text-[#14294C] text-center">
+        {def.label}
+      </span>
+    </Link>
+  );
+};
 
 
 
@@ -368,12 +401,12 @@ const Index = () => {
 
   const FlowRow = ({ title, steps }: { title: string; steps: FlowStep[] }) => (
     <div className="w-full">
-      <h4 className="text-lg md:text-xl font-semibold !text-[#14294C] mb-4 ">
+      <h4 className="text-lg md:text-xl font-semibold !text-[#14294C] mb-5 text-center sm:text-left">
         {title}
       </h4>
 
       {/* Left-aligned, wider row so both rows start at same x-position */}
-      <div className="mx-auto max-w-[1120px] flex flex-wrap items-center justify-start gap-y-8 gap-x-4 md:gap-x-5 ">
+      <div className="mx-auto max-w-[1120px] hidden sm:flex flex-wrap items-center justify-start gap-y-8 gap-x-4 md:gap-x-5 ">
         {steps.map((s, i) => (
           <React.Fragment key={s.label}>
             {/* Icon + label (bigger sizes) */}
@@ -382,7 +415,7 @@ const Index = () => {
                 <img
                   src={s.icon}
                   alt={s.label}
-                  className="h-14 w-14 sm:h-16 sm:w-16 object-contain"
+                  className="h-14 w-14 sm:h-16 sm:w-16 object-contain grayscale opacity-70"
                   loading="lazy"
                 />
               </div>
@@ -398,6 +431,17 @@ const Index = () => {
               </div>
             )}
           </React.Fragment>
+        ))}
+      </div>
+      <div className="sm:hidden mx-auto max-w-xs">
+        {steps.map((s, i) => (
+          <div key={s.label} className="flex flex-col items-center">
+            <div className="flex w-full items-center gap-4 rounded-xl border border-gray-100 bg-gray-50/70 px-5 py-3">
+              <img src={s.icon} alt="" className="h-12 w-12 shrink-0 object-contain grayscale opacity-70" loading="lazy" />
+              <span className="text-sm font-medium text-gray-900">{s.label}</span>
+            </div>
+            {i < steps.length - 1 && <ChevronRight className="my-1 h-6 w-6 rotate-90 text-gray-400" aria-hidden="true" />}
+          </div>
         ))}
       </div>
     </div>
@@ -500,7 +544,65 @@ const Index = () => {
     ),
   };
 
+useEffect(() => {
+  (async () => {
+    setTestimonialLoading(true);
+    setTestimonialError(null);
 
+    try {
+      const res = await apiGetRequest(
+        "testimonials/getTestimonials",
+        token
+      );
+console.log("Testimonials Response:", res);
+      const list =
+        Array.isArray(res)
+          ? res
+          : Array.isArray(res?.data)
+          ? res.data
+          : Array.isArray(res?.items)
+          ? res.items
+          : Array.isArray(res?.data?.items)
+          ? res.data.items
+          : [];
+
+      // show only published testimonials
+      setTestimonials(list);
+    } catch (err: any) {
+      setTestimonialError(
+        err?.message || "Failed to load testimonials"
+      );
+    } finally {
+      setTestimonialLoading(false);
+    }
+  })();
+}, [token]);
+
+useEffect(() => {
+  if (location.hash !== '#client-testimonials') return;
+
+  const HEADER_OFFSET = 80; // account for sticky header height + a little breathing room
+
+  const scrollToSection = () => {
+    const el = document.getElementById('client-testimonials');
+    if (!el) return false;
+    const rect = el.getBoundingClientRect();
+    const targetTop = window.pageYOffset + rect.top - HEADER_OFFSET;
+    window.scrollTo({ top: targetTop, behavior: 'smooth' });
+    return true;
+  };
+
+  // retry until the section exists (it may still be mounting)
+  let attempts = 0;
+  const interval = setInterval(() => {
+    attempts++;
+    if (scrollToSection() || attempts > 20) {
+      clearInterval(interval);
+    }
+  }, 150);
+
+  return () => clearInterval(interval);
+}, [location]);
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -508,7 +610,7 @@ const Index = () => {
 
       <main className="flex-1">
         {/* Hero Section */}
-        <section className="relative min-h-[70vh]">
+        <section className="relative min-h-[calc(100svh-4rem)] sm:min-h-[70vh]">
           <div className="relative">
             <Swiper
               slidesPerView={1}
@@ -527,37 +629,56 @@ const Index = () => {
 
               {heroSlides.map((slide) => (
                 <SwiperSlide key={slide.id}>
-                  <div
-                    className="relative min-h-[70vh] flex items-center justify-center bg-cover bg-center"
-                    style={{ backgroundImage: `url(${slide.image})` }}
-                  >
+                  <div className="relative min-h-[calc(100svh-4rem)] sm:min-h-[70vh] flex items-center justify-center overflow-hidden">
+
+                    {/* Video Slide */}
+                    {slide.type === "video" ? (
+                      <video
+                        autoPlay
+                        muted
+                        loop
+                        playsInline
+                        className="absolute inset-0 w-full h-full object-cover"
+                      >
+                        <source src={slide.video} type="video/mp4" />
+                      </video>
+                    ) : (
+                      /* Image Slide */
+                      <div
+                        className="absolute inset-0 bg-cover bg-center"
+                        style={{ backgroundImage: `url(${slide.image})` }}
+                      />
+                    )}
+
+                    {/* Overlay */}
                     <div className="absolute inset-0 bg-[linear-gradient(115deg,rgba(20,41,76,0.68),rgba(181,62,28,0.35))]" />
 
-
-                    <div className="relative z-10 text-center max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-white">
-                      <h1 className="text-4xl md:text-6xl font-bold mb-6 animate-fade-in">
+                    {/* Content */}
+                    <div className="relative z-10 text-center max-w-4xl mx-auto px-8 sm:px-4 text-white">
+                      <h1 className="text-3xl sm:text-4xl md:text-6xl font-bold leading-tight mb-4 sm:mb-6">
                         {slide.title}
                         <span className="block text-accent">{slide.highlight}</span>
                       </h1>
-                      <p className="text-xl md:text-2xl text-white/90 mb-8 animate-slide-up">
+
+                      <p className="text-base sm:text-xl md:text-2xl leading-relaxed text-white/90 mb-7 sm:mb-8">
                         {slide.description}
                       </p>
-                      <div className="flex flex-col sm:flex-row gap-4 justify-center animate-scale-in">
-                        <Link to="/catalog">
+
+                      <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                        <Link to="/catalog" className="w-full sm:w-auto">
                           <Button
-                            variant="hero"
                             size="lg"
-                            className="w-full sm:w-auto bg-[#14294C] text-white hover:bg-[#0F1F3A]"
+                            className="w-full bg-[#14294C] hover:bg-[#0F1F3A]"
                           >
                             Explore Catalog
                             <ArrowRight className="ml-2 h-5 w-5" />
                           </Button>
                         </Link>
-                        <Link to="/contact">
+
+                        <Link to="/contact" className="w-full sm:w-auto">
                           <Button
-                            variant="elegant"
                             size="lg"
-                            className="w-full sm:w-auto bg-[#b53e1d] text-white hover:bg-[#9E3518]"
+                            className="w-full bg-[#b53e1d] hover:bg-[#9E3518]"
                           >
                             Get Consultation
                           </Button>
@@ -671,7 +792,7 @@ const Index = () => {
                 </div>
 
                 {/* ---------- Icons ---------- */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8 text-center mb-16">
+                <div className="grid grid-cols-2 lg:grid-cols-5 gap-x-4 gap-y-8 text-center mb-12 sm:mb-16">
                   {[
                     {
                       icon: <Truck className="h-6 w-6 text-[#b53e1d]" />,
@@ -699,7 +820,7 @@ const Index = () => {
                       desc: "Services tailored to your needs.",
                     },
                   ].map((point, idx) => (
-                    <div key={idx} className="px-4 flex flex-col items-center">
+                    <div key={idx} className="px-1 sm:px-4 flex flex-col items-center">
                       <div className="h-14 w-14 rounded-full bg-white flex items-center justify-center mb-6">
                         {point.icon}
                       </div>
@@ -753,7 +874,7 @@ const Index = () => {
 
                   {/* Right */}
                   <div className="md:pl-14 lg:pl-16">
-                    <h3 className="mb-6 mr-14 text-xl font-semibold text-[#14294C] text-center">
+                    <h3 className="mb-6 md:mr-14 text-xl font-semibold text-[#14294C] text-center">
                       For Bulk Purchasers &amp; Corporate Clients
                     </h3>
 
@@ -812,7 +933,7 @@ const Index = () => {
               </div>
 
               {bestLoading && (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
                   {[...Array(8)].map((_, i) => (
                     <Card key={i} className="overflow-hidden">
                       <div className="aspect-[4/3] animate-pulse bg-gray-100" />
@@ -829,7 +950,7 @@ const Index = () => {
               )}
 
               {!bestLoading && !bestError && (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
                   {bestSellers.map((p: any) => {
                     const img = getFirstImageFromProduct(p, FILE_BASE);
                     const title = p?.name || p?.title || "Untitled";
@@ -863,7 +984,7 @@ const Index = () => {
                             )}
                           </div>
                           <CardContent className="py-4">
-                            <div className="text-center font-semibold tracking-wide uppercase">
+                            <div className="text-center text-sm sm:text-base font-semibold tracking-wide uppercase break-words">
                               {title}
                             </div>
                             <CardContent className="py-4">
@@ -925,67 +1046,109 @@ const Index = () => {
               </div>
 
               {/* Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-12 lg:gap-16">
-                {[
-                  {
-                    text:
-                      "I like all the chairs specially Gavin is lovely. Very happy with services and coordination is super. Thank you so much for prompt delivery 🙏🌸 Keep it up good work👍",
-                    author: "Sujata Naik, Homestyling",
-                  },
-                  {
-                    text:
-                      "Edendek has been a great furniture partner for us since the beginning of our journey at 91Springboard. They have also managed to scale their capacity well in line with our rapid expansion. They have been able to match our product needs and have always delivered on time.",
-                    author: "Pranay Gupta, Co-Founder, 91Springboard",
-                  },
-                  {
-                    text:
-                      "For our work furniture requirements, we have many vendors on-board. Edendek is a furniture partner with the best track record of quality and service, and the lowest complaint rate compared to others.",
-                    author:
-                      "Anirudh Sundareswar, Director & Head of Sourcing, BNY Mellon",
-                  },
-                  {
-                    text:
-                      "We really like the quality and finish provided by Edendek in their teak wood and upholstered furniture. I hope they open a showroom in Bangalore soon, for us to take our clients there.",
-                    author: "Sunitha Kondur, Partner, HundredHands",
-                  },
-                  {
-                    text:
-                      "Edendek is a great furniture partner for architects and interior designers. It was easy to communicate and discuss designs with them. Their products and service is awesome.",
-                    author:
-                      "Shraddhanjali Chowdhury, Architect, Balan and Nambisan Architects",
-                  },
-                  {
-                    text:
-                      "Edendek team has a good design sense and are able to connect with the designer community quite well. What I like about them is that they also provide customised furniture for our projects, beyond what they have in their catalog.",
-                    author: "Kruti Parikh, Associate Design Director, FITCH",
-                  },
-                ].map((t, idx) => (
-                  <div key={idx} className="relative">
-                    {/* Big quote mark */}
-                    <OpenQuote className="absolute -top-3 -left-3 w-20 sm:w-24 pointer-events-none select-none" />
+          {testimonialLoading ? (
+  <div className="text-center py-10">
+    Loading testimonials...
+  </div>
+) : testimonialError ? (
+  <div className="text-center text-red-500 py-10">
+    {testimonialError}
+  </div>
+) : testimonials.length === 0 ? (
+  <div className="text-center py-10 text-gray-500">
+    No testimonials available.
+  </div>
+) : (
+  <div className="relative">
+    <Swiper
+      modules={[Autoplay, Navigation]}
+      slidesPerView={1}
+      loop={testimonials.length > 2}
+      autoplay={{
+        delay: 5000,
+        disableOnInteraction: false,
+      }}
+      navigation={{
+        prevEl: prevRef.current,
+        nextEl: nextRef.current,
+      }}
+      onBeforeInit={(swiper) => {
+        // @ts-ignore
+        swiper.params.navigation.prevEl = prevRef.current;
+        // @ts-ignore
+        swiper.params.navigation.nextEl = nextRef.current;
+      }}
+    >
+ {testimonials.map((item, index) => (
+    <SwiperSlide key={index}>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 px-5 sm:px-8 md:px-0">
 
-                    {/* Content block with left padding so quote doesn't overlap */}
-                    <div className="pl-8 sm:pl-10">
-                      {/* Body (smaller, lighter, slightly tighter like screenshot) */}
-                      <p className="text-gray-900 text-sm md:text-base leading-7 relative z-10">
-                        {t.text}
-                      </p>
+        {[0, 1].map((offset) => {
+          const testimonial =
+  testimonials[(index + offset) % testimonials.length];
 
-                      {/* Divider + Author aligned to the right */}
-                      <div className="mt-6 flex items-center justify-end gap-4">
-                        <div className="h-[2px] w-20 bg-black" />
-                        <span className="text-sm font-normal text-gray-900">
-                          {t.author}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                ))}
+          return (
+            <div key={offset} className={`relative ${offset === 1 ? "hidden md:block" : ""}`}>
+
+              <OpenQuote className="absolute -top-3 -left-3 w-20 sm:w-24 text-gray-300" />
+
+              <div className="pl-8 sm:pl-10">
+
+                <p className="text-gray-900 text-base leading-7 md:min-h-[170px]">
+                  {testimonial.message}
+                </p>
+
+                <div className="mt-6 flex items-center justify-end gap-4">
+                  <div className="h-[2px] w-20 bg-black"></div>
+
+                  <span className="text-sm text-gray-900">
+                    <strong>{testimonial.clientName}</strong>
+{testimonial.designation || testimonial.company ? (
+  <>
+    {" • "}
+    {testimonial.designation}
+    {testimonial.company
+      ? `, ${testimonial.company}`
+      : ""}
+  </>
+) : null}
+                  </span>
+                </div>
+
               </div>
+
+            </div>
+          );
+        })}
+
+      </div>
+    </SwiperSlide>
+  ))}
+</Swiper>
+
+    {/* Left arrow */}
+    <button
+      ref={prevRef}
+      aria-label="Previous testimonial"
+      className="absolute top-1/2 -translate-y-1/2 left-0 sm:-left-4 z-10 flex items-center justify-center w-10 h-10 rounded-full bg-white shadow-md border border-gray-200 hover:bg-gray-50 transition"
+    >
+      <ChevronLeft className="w-5 h-5 text-[#14294C]" />
+    </button>
+
+    {/* Right arrow */}
+    <button
+      ref={nextRef}
+      aria-label="Next testimonial"
+      className="absolute top-1/2 -translate-y-1/2 right-0 sm:-right-4 z-10 flex items-center justify-center w-10 h-10 rounded-full bg-white shadow-md border border-gray-200 hover:bg-gray-50 transition"
+    >
+      <ChevronRight className="w-5 h-5 text-[#14294C]" />
+    </button>
+  </div>
+)
+}
             </div>
           </section>
         </FadeInSection>
-
 
 
 
@@ -1070,7 +1233,7 @@ const Index = () => {
                 Get in touch with our design experts and discover how we can create the perfect furniture for your home or office.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Link to="/contact">
+                <Link to="/contact" className="w-full sm:w-auto">
                   <Button
                     variant="elegant"
                     size="lg"
@@ -1079,7 +1242,7 @@ const Index = () => {
                     Start Your Project
                   </Button>
                 </Link>
-                <Link to="/catalog">
+                <Link to="/catalog" className="w-full sm:w-auto">
                   <Button variant="outline" size="lg" className="w-full sm:w-auto border-white text-black hover:bg-white hover:text-primary">
                     Browse Catalog
                   </Button>

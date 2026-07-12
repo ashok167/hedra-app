@@ -7,12 +7,12 @@ export function Footer() {
   return (
     <footer className="bg-muted/30 border-t border-border">
       {/* ↓ was py-12. Reduce top padding only. */}
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-12">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-6 sm:pt-10 sm:pb-8">
         {/* ↓ align all columns to the same top line */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 items-start">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-x-5 gap-y-9 sm:gap-8 items-start">
           {/* Company Info */}
-          <div className="space-y-8">
-            <div className="flex items-center gap-1 leading-none -mt-[1px]">
+          <div className="col-span-2 md:col-span-1 space-y-4 text-center md:text-left">
+            <div className="flex items-center justify-center md:justify-start gap-1 leading-none">
               <img
                 src={edendekLogo}
                 alt="Edendek logo"
@@ -22,7 +22,7 @@ export function Footer() {
             </div>
 
             <p className="mt-2 text-sm text-gray-900 leading-snug
-               max-w-[22ch] sm:max-w-[24ch] md:max-w-[28ch] lg:max-w-[30ch]">
+               max-w-md mx-auto md:mx-0 md:max-w-[28ch] lg:max-w-[30ch]">
               Creating exceptional furniture pieces that blend craftsmanship with modern design.
               Your trusted partner for premium furniture solutions.
             </p>
@@ -38,6 +38,9 @@ export function Footer() {
               <Link to="/projects" className="text-gray-900 hover:text-[#b53e1d] transition-colors text-sm">Our Projects</Link>
               <Link to="/services" className="text-gray-900 hover:text-[#b53e1d] transition-colors text-sm">Services</Link>
               <Link to="/about" className="text-gray-900 hover:text-[#b53e1d] transition-colors text-sm">About Us</Link>
+               <Link to="/blogs" className="text-gray-900 hover:text-[#b53e1d] transition-colors text-sm">
+      Blogs
+    </Link>
             </nav>
           </div>
 
@@ -54,7 +57,7 @@ export function Footer() {
           </div>
 
           {/* Contact Info */}
-          <div className="space-y-4">
+          <div className="col-span-2 md:col-span-1 space-y-4">
   <h3 className="text-sm font-semibold text-[#14294C] uppercase tracking-wider">
     Contact Us
   </h3>
@@ -63,11 +66,11 @@ export function Footer() {
   <div className="grid grid-cols-[22px,1fr] gap-x-3 gap-y-2 items-start">
     {/* Phone */}
     <Phone className="h-5 w-5 text-[#b53e1d] mt-0.5" />
-    <span className="text-sm text-gray-900">+91 99624 52447</span>
+    <span className="text-sm text-gray-900"><a href="tel:+919962452447">+91 99624 52447</a></span>
 
     {/* Email */}
     <Mail className="h-5 w-5 text-[#b53e1d] mt-0.5" />
-    <span className="text-sm text-gray-900">info@edendek.com</span>
+    <span className="text-sm text-gray-900 break-all"><a href="mailto:info@edendek.com">info@edendek.com</a></span>
 
     {/* Address */}
     <MapPin className="h-5 w-5 text-[#b53e1d] mt-0.5" />
@@ -80,14 +83,14 @@ export function Footer() {
   </div>
 
   {/* Socials */}
-  <div className="flex gap-4 pt-2">
-    <a href="#" aria-label="Facebook" className="text-gray-900 hover:text-[#b53e1d] transition-colors">
+  <div className="flex gap-3 pt-2">
+    <a href="#" aria-label="Facebook" className="flex h-11 w-11 items-center justify-center rounded-full border border-gray-200 text-gray-900 hover:border-[#b53e1d] hover:text-[#b53e1d] transition-colors">
       <Facebook className="h-5 w-5" />
     </a>
-    <a href="#" aria-label="Instagram" className="text-gray-900 hover:text-[#b53e1d] transition-colors">
+    <a href="#" aria-label="Instagram" className="flex h-11 w-11 items-center justify-center rounded-full border border-gray-200 text-gray-900 hover:border-[#b53e1d] hover:text-[#b53e1d] transition-colors">
       <Instagram className="h-5 w-5" />
     </a>
-    <a href="#" aria-label="LinkedIn" className="text-gray-900 hover:text-[#b53e1d] transition-colors">
+    <a href="#" aria-label="LinkedIn" className="flex h-11 w-11 items-center justify-center rounded-full border border-gray-200 text-gray-900 hover:border-[#b53e1d] hover:text-[#b53e1d] transition-colors">
       <Linkedin className="h-5 w-5" />
     </a>
   </div>
@@ -96,12 +99,12 @@ export function Footer() {
         </div>
 
         {/* Bottom Bar */}
-        <div className="border-t border-border mt-8 pt-6 flex flex-col sm:flex-row justify-between items-center">
+        <div className="border-t border-border mt-9 pt-6 flex flex-col sm:flex-row justify-between items-center gap-4 text-center sm:text-left">
          <p className="text-[#14294C] text-sm">
   © {new Date().getFullYear()} Edendek. All rights reserved.
 </p>
 
-          <div className="flex space-x-4 mt-4 sm:mt-0">
+          <div className="flex flex-wrap justify-center gap-x-5 gap-y-2">
             <Link to="/privacy" className="text-[#14294C] hover:text-[#14294C] transition-colors text-sm">Privacy Policy</Link>
             <Link to="/terms" className="text-[#14294C] hover:text-[#14294C] transition-colors text-sm">Terms of Service</Link>
           </div>

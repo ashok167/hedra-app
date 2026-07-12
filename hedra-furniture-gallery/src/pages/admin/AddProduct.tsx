@@ -44,6 +44,13 @@ export default function AddProduct() {
     { key: '', value: '' }
   ]);
 
+  const [customizations, setCustomizations] = useState([
+    {
+      type: '',
+      options: '',
+    },
+  ]);
+
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   if (!isAuthenticated) {
@@ -114,6 +121,32 @@ export default function AddProduct() {
     });
   };
 
+  const handleCustomizationChange = (
+    index: number,
+    field: 'type' | 'options',
+    value: string
+  ) => {
+    const updated = [...customizations];
+    updated[index][field] = value;
+    setCustomizations(updated);
+  };
+
+  const addCustomization = () => {
+    setCustomizations([
+      ...customizations,
+      {
+        type: '',
+        options: '',
+      },
+    ]);
+  };
+
+  const removeCustomization = (index: number) => {
+    if (customizations.length > 1) {
+      setCustomizations(customizations.filter((_, i) => i !== index));
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -123,8 +156,21 @@ export default function AddProduct() {
       if (!formData.name.trim()) throw new Error('Product name is required');
       if (!formData.description.trim()) throw new Error('Product description is required');
       if (!formData.category) throw new Error('Product category is required');
-      if (!formData.price || isNaN(Number(formData.price))) throw new Error('Valid price is required');
+      if (!formData.price.trim())
+        throw new Error("Price is required");
       if (!images.length) throw new Error('Please upload at least one image.');
+
+      const customizationsArray = customizations
+        .filter(
+          (c) => c.type.trim() && c.options.trim()
+        )
+        .map((c) => ({
+          type: c.type.trim(),
+          options: c.options
+            .split(',')
+            .map((o) => o.trim())
+            .filter(Boolean),
+        }));
 
       // ✅ Build specsArray from UI state
       const specsArray = specifications
@@ -145,6 +191,10 @@ export default function AddProduct() {
       payload.append('price', String(formData.price));
       payload.append('tags', JSON.stringify(tagsArray));
       payload.append('specifications', JSON.stringify(specsArray));
+      payload.append(
+        'customizations',
+        JSON.stringify(customizationsArray)
+      );
       payload.append('featured', String(formData.featured));
 
       // ✅ Append all files with the SAME key "images"
@@ -230,7 +280,7 @@ export default function AddProduct() {
                   <div>
                     <Label htmlFor="category" className="text-gray-900">Category *</Label>
                     <Select onValueChange={handleCategoryChange} required>
-                     <SelectTrigger className="focus:border-[#b53e1d] focus:ring-0 focus:ring-offset-0">
+                      <SelectTrigger className="focus:border-[#b53e1d] focus:ring-0 focus:ring-offset-0">
                         <SelectValue placeholder="Select a category" />
                       </SelectTrigger>
                       <SelectContent>
@@ -247,13 +297,10 @@ export default function AddProduct() {
                     <Input
                       id="price"
                       name="price"
-                      type="number"
-                      step="0.01"
+                      type="text"
                       value={formData.price}
                       onChange={handleInputChange}
-                      placeholder="Enter product price"
-                      required
-                      className="text-gray-900 focus:border-[#b53e1d] focus-visible:ring-0 focus-visible:ring-offset-0"
+                      placeholder="Ex: ₹5,000, Contact for Price, Starting from ₹15,000"
                     />
                   </div>
 
@@ -322,6 +369,63 @@ export default function AddProduct() {
                     className="w-full text-gray-900"
                   >
                     Add Specification
+                  </Button>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-[#14294C]">
+                    Customizations
+                  </CardTitle>
+                </CardHeader>
+
+                <CardContent className="space-y-4">
+                  {customizations.map((item, index) => (
+                    <div key={index} className="flex items-center gap-2">
+                      <Input
+                        placeholder="Customization Type (Color, Size, Material)"
+                        value={item.type}
+                        onChange={(e) =>
+                          handleCustomizationChange(
+                            index,
+                            'type',
+                            e.target.value
+                          )
+                        }
+                      />
+
+                      <Input
+                        placeholder="Options (Brown, Black, Grey)"
+                        value={item.options}
+                        onChange={(e) =>
+                          handleCustomizationChange(
+                            index,
+                            'options',
+                            e.target.value
+                          )
+                        }
+                      />
+
+                      {customizations.length > 1 && (
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => removeCustomization(index)}
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      )}
+                    </div>
+                  ))}
+
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={addCustomization}
+                    className="w-full"
+                  >
+                    Add Customization
                   </Button>
                 </CardContent>
               </Card>

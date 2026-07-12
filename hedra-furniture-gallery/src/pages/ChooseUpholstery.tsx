@@ -4,6 +4,7 @@ import { Footer } from "@/components/layout/Footer";
 import { Card } from "@/components/ui/card";
 import { motion, easeOut } from "framer-motion";
 import { apiGetRequest } from "../../service";
+const FILE_BASE_URL = import.meta.env.VITE_FILE_BASE_URL;
 
 /** 🔎 Import all upholstery preview images */
 const imgModules = import.meta.glob("@/assets/upholstery/*.{png,jpg,jpeg,webp,svg}", {
@@ -70,6 +71,11 @@ export default function ChooseUpholstery() {
   const hideOnError = (e: React.SyntheticEvent<HTMLImageElement>) => {
     (e.currentTarget as HTMLImageElement).style.display = "none";
   };
+
+  const openPdf = (url?: string) => {
+  if (!url) return;
+  window.open(url, "_blank", "noopener,noreferrer");
+};
   
 
   return (
@@ -116,28 +122,37 @@ export default function ChooseUpholstery() {
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
                 {fabrics.map((fabric) => {
                   // ✅ Use imageUrl and pdfUrl from backend
-                  const image =
-                    fabric.imageUrl ||
-                    imagesByBase[fabric.name ?? ""] ||
-                    imagesByBase["lenka"];
+                const image =
+  fabric.imageUrl
+    ? fabric.imageUrl.startsWith("http")
+      ? fabric.imageUrl
+      : `${FILE_BASE_URL}${fabric.imageUrl}`
+    : imagesByBase[fabric.name ?? ""] ||
+      imagesByBase["lenka"];
                   const hoverImage = imagesByBase[`${fabric.name}-hover`] ?? undefined;
-                  const API_BASE = import.meta.env.VITE_API_BASE_URL || "https://www.edendek.com";
+                  // const API_BASE = import.meta.env.VITE_API_BASE_URL || "https://www.edendek.com";
 
                   // In your component
-                  const pdfHref = fabric.pdfUrl
-                    ? fabric.pdfUrl.startsWith("http")
-                      ? fabric.pdfUrl
-                      : `https://www.edendek.com${fabric.pdfUrl.startsWith("/") ? "" : "/"}${fabric.pdfUrl.replace(/^\/api\/uploads\//, "/uploads/")}`
-                    : undefined;
+                 const pdfHref = fabric.pdfUrl
+  ? fabric.pdfUrl.startsWith("http")
+    ? fabric.pdfUrl
+    : `${FILE_BASE_URL}${
+        fabric.pdfUrl.startsWith("/") ? "" : "/"
+      }${fabric.pdfUrl.replace(/^\/api\/uploads\//, "/uploads/")}`
+  : undefined;
                   return (
                     <Card key={fabric.id} className="relative overflow-hidden group shadow-md rounded-md">
                       <div className="relative aspect-[4/3] overflow-hidden">
                         <img
-                          src={image}
-                          alt={fabric.name}
-                          className={`w-full h-full object-cover absolute inset-0 transition-[opacity,transform] duration-500 ${hoverImage ? "group-hover:opacity-0 group-hover:scale-110" : "group-hover:scale-110"
-                            }`}
-                        />
+  src={image}
+  alt={fabric.name}
+  onClick={() => openPdf(pdfHref)}
+  className={`w-full h-full object-cover absolute inset-0 transition-[opacity,transform] duration-500 cursor-pointer ${
+    hoverImage
+      ? "group-hover:opacity-0 group-hover:scale-110"
+      : "group-hover:scale-110"
+  }`}
+/>
                         {hoverImage && (
                           <img
                             src={hoverImage}

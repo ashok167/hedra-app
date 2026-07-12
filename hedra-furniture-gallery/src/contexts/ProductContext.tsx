@@ -9,6 +9,10 @@ export interface Product {
   category: string; // Category will be a string now, fetched dynamically
   images: string[];
   specifications?: Record<string, string>;
+  customizations?: {
+    type: string;
+    options: string[];
+  }[];
   price?: number; // ✅ Add this
   tags?: string[];
   imageUrl: string;

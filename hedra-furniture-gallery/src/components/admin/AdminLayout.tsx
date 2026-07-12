@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Home, Package, Plus, Settings, LogOut, Eye,FileUp, Tags } from 'lucide-react';
+import { Home, Package, Plus, Settings, LogOut, Eye,FileUp, Tags,Briefcase, FileText, MessageSquare } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import { cn } from '@/lib/utils';
@@ -13,9 +13,21 @@ interface AdminLayoutProps {
 const navigation = [
   { name: 'Dashboard', href: '/admin/dashboard', icon: Home },
   { name: 'Products', href: '/admin/products', icon: Package },
-  { name: 'Add Product', href: '/admin/products/add', icon: Plus },
-  { name: 'Upload Catalogue', href: '/admin/catalogue/upload', icon: FileUp },
+  // { name: 'Add Product', href: '/admin/products/add', icon: Plus },
+  // { name: 'Upload Catalogue', href: '/admin/catalogue/upload', icon: FileUp },
   { name: 'Catalogue', href: '/admin/catalogue', icon: Tags },
+   { name: "Projects", href: "/admin/projects", icon: Briefcase },
+  // { name: "Add Project", href: "/admin/projects/add", icon: Plus },
+  {
+    name: "Blogs",
+    href: "/admin/blogs",
+    icon: FileText,
+  },
+  {
+    name: "Testimonials",
+    href: "/admin/testimonials",
+    icon: MessageSquare,
+  },
 ];
 
 export function AdminLayout({ children }: AdminLayoutProps) {

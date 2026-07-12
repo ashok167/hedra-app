@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Mail, Phone, MapPin, Clock, Send } from "lucide-react";
+import { FaWhatsapp, FaInstagram, FaFacebookF } from "react-icons/fa";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -263,16 +264,53 @@ export default function Contact() {
                       </div>
 
                       <div>
-                        <Button
-                          type="submit"
-                          variant="hero"
-                          size="lg"
-                          className="w-full md:w-auto bg-[#b53e1d] text-white hover:bg-[#9E3518] focus-visible:ring-[#b53e1d]/40 disabled:bg-[#b53e1d]/60"
-                          disabled={submitting}
-                        >
-                          {submitting ? "Sending..." : "Send Message"}
-                          <Send className="ml-2 h-5 w-5" />
-                        </Button>
+                        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                          <Button
+                            type="submit"
+                            variant="hero"
+                            size="lg"
+                            className="bg-[#b53e1d] text-white hover:bg-[#9E3518] focus-visible:ring-[#b53e1d]/40 disabled:bg-[#b53e1d]/60"
+                            disabled={submitting}
+                          >
+                            {submitting ? "Sending..." : "Send Message"}
+                            <Send className="ml-2 h-5 w-5" />
+                          </Button>
+
+                          <div className="flex items-center gap-3">
+                            {/* WhatsApp */}
+                            <a
+                              href="https://wa.me/919962452447"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="w-11 h-11 rounded-full bg-[#25D366] hover:scale-110 transition flex items-center justify-center text-white"
+                              title="WhatsApp"
+                            >
+                              <FaWhatsapp size={22} />
+                            </a>
+
+                            {/* Instagram */}
+                            <a
+                              href="https://instagram.com/your_instagram_username"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="w-11 h-11 rounded-full bg-gradient-to-br from-[#F58529] via-[#DD2A7B] to-[#8134AF] hover:scale-110 transition flex items-center justify-center text-white"
+                              title="Instagram"
+                            >
+                              <FaInstagram size={22} />
+                            </a>
+
+                            {/* Facebook */}
+                            <a
+                              href="https://facebook.com/your_page_name"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="w-11 h-11 rounded-full bg-[#1877F2] hover:scale-110 transition flex items-center justify-center text-white"
+                              title="Facebook"
+                            >
+                              <FaFacebookF size={20} />
+                            </a>
+                          </div>
+                        </div>
 
                       </div>
                     </form>

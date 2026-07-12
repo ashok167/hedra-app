@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useRef } from 'react';
+import { motion, easeOut } from "framer-motion";
 import { useNavigate, useParams } from 'react-router-dom';
 import { Search, Filter, Grid3X3, List, Download } from 'lucide-react';
 import jsPDF from 'jspdf';
@@ -15,6 +16,34 @@ import { PRODUCT_CATEGORIES, ProductCategory } from '@/types/product';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { ChevronLeft, ChevronRight, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import type { Variants } from "framer-motion";
+
+const container: Variants = {
+  hidden: {
+    opacity: 0,
+  },
+  show: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.25,
+    },
+  },
+};
+
+const item: Variants = {
+  hidden: {
+    opacity: 0,
+    y: 20,
+  },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.8,
+      ease: easeOut,   // ✅ not "easeOut"
+    },
+  },
+};
 
 export default function Catalog() {
   const navigate = useNavigate();
@@ -109,7 +138,7 @@ export default function Catalog() {
 
   // Function to navigate to the Product Detail page and pass the ID in the state
   const handleViewProduct = (productId: string) => {
-    navigate("/product", { state: { id: productId } });
+    navigate(`/product/${productId}`);
   };
 
   // Try common field names for a product's PDF URL.
@@ -137,7 +166,7 @@ export default function Catalog() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Header />
+      {/* <Header /> */}
 
       <main className="flex-1">
         {/* Category Viewer */}
@@ -282,16 +311,35 @@ export default function Catalog() {
         </Dialog>
 
 
-        <section className="bg-muted/30 py-12">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h1 className="text-4xl md:text-5xl font-bold text-[#14294C] mb-4">
-              Product Catalog
-            </h1>
-            <p className="text-lg text-gray-900 max-w-2xl mx-auto">
-              Discover our comprehensive collection of premium furniture designed to elevate your space.
-            </p>
-          </div>
-        </section>
+      <section className="bg-white py-20 overflow-hidden">
+  <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
+    <motion.div
+      variants={container}
+      initial="hidden"
+      animate="show"
+    >
+      <motion.h1
+        variants={item}
+        className="text-4xl md:text-5xl font-bold text-[#14294C] mb-4"
+      >
+        Product Catalog
+      </motion.h1>
+
+      <motion.div
+        variants={item}
+        className="w-10 h-[2px] bg-[#14294C] mx-auto mb-6"
+      />
+
+      <motion.p
+        variants={item}
+        className="text-lg text-gray-900 max-w-2xl mx-auto"
+      >
+        Discover our comprehensive collection of premium furniture designed
+        to elevate your space.
+      </motion.p>
+    </motion.div>
+  </div>
+</section>
 
         <section className="py-8 border-b border-border">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -407,7 +455,10 @@ export default function Catalog() {
                             {/* Download button ON the image */}
                             {/* Download button ON the image (actually opens preview) */}
                             <button
-                              onClick={(e) => openPdfPreview(e, getPdfUrl(firstProduct))}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleViewProduct(firstProduct.id);
+                              }}
                               aria-label="Open catalog PDF"
                               className="
     absolute left-3 bottom-3 inline-flex items-center gap-2 px-3 py-2 rounded-md
@@ -493,7 +544,7 @@ export default function Catalog() {
         </section>
       </main>
 
-      <Footer />
+      {/* <Footer /> */}
     </div>
   );
 }

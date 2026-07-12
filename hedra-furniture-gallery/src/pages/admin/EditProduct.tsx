@@ -38,6 +38,7 @@ export default function EditProduct() {
     tags: '',
     bestSeller: false,
     specifications: {} as Record<string, string>,
+    customizations: [] as any[],
     images: [] as string[]
   });
 
@@ -45,12 +46,24 @@ export default function EditProduct() {
     { key: '', value: '' }
   ]);
 
+ 
+  
+ const [customizations, setCustomizations] = useState<
+  { type: string; options: string }[]
+>([
+  {
+    type: '',
+    options: '',
+  },
+]);
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     if (productId) {
       const product = getProductById(productId);
+      console.log('Fetched product for editing:', product);
       if (product) {
         setFormData({
           name: product.name,
@@ -58,6 +71,7 @@ export default function EditProduct() {
           category: product.category as ProductCategory,
           featured: product.featured || false,
           specifications: product.specifications,
+         customizations: [],
           bestSeller: product.bestSeller || false,
           images: product.images,
           price: product.price?.toString() || '',
@@ -79,7 +93,45 @@ export default function EditProduct() {
           specsArray = [];
         }
 
-        setSpecifications(specsArray.length > 0 ? specsArray : [{ key: '', value: '' }]);
+        setSpecifications(
+  specsArray.length > 0
+    ? specsArray
+    : [{ key: '', value: '' }]
+);
+
+// Customizations
+let customizationData: {
+  type: string;
+  options: string;
+}[] = [];
+
+try {
+  if (typeof product.customizations === "string") {
+    const parsed = JSON.parse(product.customizations);
+
+    customizationData = parsed.map((item: any) => ({
+      type: item.type || "",
+      options: Array.isArray(item.options)
+        ? item.options.join(", ")
+        : "",
+    }));
+  } else if (Array.isArray(product.customizations)) {
+    customizationData = product.customizations.map((item: any) => ({
+      type: item.type || "",
+      options: Array.isArray(item.options)
+        ? item.options.join(", ")
+        : "",
+    }));
+  }
+} catch (error) {
+  console.warn("Failed to parse customizations");
+}
+
+setCustomizations(
+  customizationData.length > 0
+    ? customizationData
+    : [{ type: "", options: "" }]
+);
 
       }
       setIsLoading(false);
@@ -149,6 +201,34 @@ export default function EditProduct() {
     }
   };
 
+const handleCustomizationChange = (
+  index: number,
+  field: 'type' | 'options',
+  value: string
+) => {
+  const updated = [...customizations];
+  updated[index][field] = value;
+  setCustomizations(updated);
+};
+
+const addCustomization = () => {
+  setCustomizations([
+    ...customizations,
+    {
+      type: '',
+      options: '',
+    },
+  ]);
+};
+
+const removeCustomization = (index: number) => {
+  if (customizations.length > 1) {
+    setCustomizations(
+      customizations.filter((_, i) => i !== index)
+    );
+  }
+};
+
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files) return;
@@ -193,7 +273,8 @@ export default function EditProduct() {
       if (!formData.name.trim()) throw new Error('Product name is required');
       if (!formData.description.trim()) throw new Error('Product description is required');
       if (!formData.category) throw new Error('Product category is required');
-      if (!formData.price || isNaN(Number(formData.price))) throw new Error('Valid price is required');
+     if (!formData.price.trim())
+  throw new Error('Price is required');
 
       // ✅ figure out which original URLs remain after deletions
       const imagesToKeep = initialImages.filter(url => formData.images.includes(url));
@@ -212,6 +293,20 @@ export default function EditProduct() {
         .map(tag => tag.trim())
         .filter(Boolean);
 
+        const customizationsArray = customizations
+  .filter(
+    (item) =>
+      item.type.trim() &&
+      item.options.trim()
+  )
+  .map((item) => ({
+    type: item.type.trim(),
+    options: item.options
+      .split(',')
+      .map((o) => o.trim())
+      .filter(Boolean),
+  }));
+
       const fd = new FormData();
       fd.append('name', formData.name);
       fd.append('description', formData.description);
@@ -219,6 +314,10 @@ export default function EditProduct() {
       fd.append('price', formData.price);
       fd.append('tags', JSON.stringify(tagsArray));
       fd.append('specifications', JSON.stringify(specsArray));
+      fd.append(
+  'customizations',
+  JSON.stringify(customizationsArray)
+);
       fd.append('bestSeller', String(formData.bestSeller));
       fd.append('featured', String(formData.featured));
 
@@ -342,16 +441,13 @@ export default function EditProduct() {
                   <div>
                     <Label htmlFor="price" className="text-gray-900">Price *</Label>
                     <Input
-                      id="price"
-                      name="price"
-                      type="number"
-                      step="0.01"
-                      value={formData.price}
-                      onChange={handleInputChange}
-                      placeholder="Enter price"
-                      required
-                      className="text-gray-900 focus:border-[#b53e1d] focus-visible:ring-0 focus-visible:ring-offset-0"
-                    />
+  id="price"
+  name="price"
+  type="text"
+  value={formData.price}
+  onChange={handleInputChange}
+  placeholder="e.g. ₹25,000 or Contact for Price"
+/>
                   </div>
 
                   <div>
@@ -421,6 +517,65 @@ export default function EditProduct() {
                   </Button>
                 </CardContent>
               </Card>
+              <Card>
+  <CardHeader>
+    <CardTitle className="text-[#14294C]">
+     Customizations
+    </CardTitle>
+  </CardHeader>
+
+  <CardContent className="space-y-4">
+    {customizations.map((item, index) => (
+      <div key={index} className="flex items-center gap-2">
+        <Input
+          placeholder="Type (Color, Size, Material)"
+          value={item.type}
+          onChange={(e) =>
+            handleCustomizationChange(
+              index,
+              'type',
+              e.target.value
+            )
+          }
+        />
+
+        <Input
+          placeholder="Options (Brown, Black, Grey)"
+          value={item.options}
+          onChange={(e) =>
+            handleCustomizationChange(
+              index,
+              'options',
+              e.target.value
+            )
+          }
+        />
+
+        {customizations.length > 1 && (
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() =>
+              removeCustomization(index)
+            }
+          >
+            <X className="h-4 w-4" />
+          </Button>
+        )}
+      </div>
+    ))}
+
+    <Button
+      type="button"
+      variant="outline"
+      onClick={addCustomization}
+      className="w-full"
+    >
+      Add Customization
+    </Button>
+  </CardContent>
+</Card>
               <div className="flex items-center space-x-2">
                 <Switch
                   id="bestSeller"

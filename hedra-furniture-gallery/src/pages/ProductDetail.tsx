@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, Link, Navigate, useLocation } from 'react-router-dom';
 import { ArrowLeft, Heart, Share2, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -21,6 +21,12 @@ export default function ProductDetail() {
   console.log("Product ID from URL:", productId);
   const product = getProductById(productId);
   console.log('Fetched Product:', product);
+  useEffect(() => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  }, [productId]);
 
   if (!productId) {
     return <Navigate to="/catalog" replace />;
@@ -105,6 +111,8 @@ export default function ProductDetail() {
     return [];
   }, [product.specifications]);
 
+
+
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
@@ -133,9 +141,9 @@ export default function ProductDetail() {
         {/* Product Details */}
         <section className="py-12">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
               {/* Image Gallery */}
-              <div className="space-y-4">
+              <div className="space-y-4 lg:sticky lg:top-4">
                 <div className="relative aspect-square overflow-hidden rounded-lg bg-muted">
                   <img
                     src={product.images[currentImageIndex]}
@@ -246,6 +254,62 @@ export default function ProductDetail() {
                   </Button>
                 </div>
 
+                {/* Customization */}
+                {/* <Card>
+                  <CardHeader>
+                    <CardTitle className="text-gray-900">Customization</CardTitle>
+                  </CardHeader>
+
+                  <CardContent>
+                    <div className="grid grid-cols-[180px_1fr] gap-4">
+                      <div className="font-semibold text-gray-900">
+                        Available Options
+                      </div>
+
+                      <div className="text-gray-500">
+                        Custom fabric, colour, finish and dimensions available on request.
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card> */}
+
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-gray-900">
+                      Customization 
+                    </CardTitle>
+                  </CardHeader>
+
+                  <CardContent>
+  {product.customizations &&
+  Array.isArray(product.customizations) &&
+  product.customizations.length > 0 ? (
+    <dl className="space-y-3">
+      {product.customizations.map((item: any, index: number) => (
+        <div
+          key={index}
+          className="grid grid-cols-[180px_1fr] gap-4 border-b border-border pb-3 last:border-b-0 items-start"
+        >
+          <dt className="font-semibold text-gray-900">
+            {item.type}
+          </dt>
+
+          <dd className="text-gray-500 break-words">
+            {Array.isArray(item.options)
+              ? item.options.join(", ")
+              : item.options}
+          </dd>
+        </div>
+      ))}
+    </dl>
+  ) : (
+    <p className="text-sm text-muted-foreground">
+      No customization options available.
+    </p>
+  )}
+</CardContent>
+                </Card>
+
                 {/* Specifications */}
                 <Card>
                   <CardHeader>
@@ -259,10 +323,15 @@ export default function ProductDetail() {
                         {specPairs.map(([label, val], i) => (
                           <div
                             key={`${label}-${i}`}
-                            className="flex justify-between border-b border-border pb-2 last:border-b-0"
+                            className="grid grid-cols-[180px_1fr] gap-4 border-b border-border pb-3 last:border-b-0 items-start"
                           >
-                            <dt className="font-medium text-gray-900">{label}</dt>
-                            <dd className="text-gray-500">{val}</dd>
+                            <dt className="font-semibold text-gray-900">
+                              {label}
+                            </dt>
+
+                            <dd className="text-gray-500 break-words">
+                              {val}
+                            </dd>
                           </div>
                         ))}
                       </dl>
@@ -271,20 +340,20 @@ export default function ProductDetail() {
                 </Card>
 
                 {/* Tags */}
-                {product.tags && product.tags.length > 0 && (
+                {/* {product.tags && product.tags.length > 0 && (
                   <Card>
                     <CardHeader>
                       <CardTitle className='text-gray-900'>Tags</CardTitle>
                     </CardHeader>
-                    <CardContent className="flex flex-wrap gap-2 text-gray-900">
-                      {product.tags.map((tag, index) => (
-                        <Badge key={index} variant="outline" className="capitalize">
-                          {tag}
-                        </Badge>
-                      ))}
+                    <CardContent>
+                      <div className="w-full min-h-[120px] p-4 border rounded-3xl bg-white">
+                        <div className="text-gray-600 leading-8 break-words">
+                          {product.tags.join(" ")}
+                        </div>
+                      </div>
                     </CardContent>
                   </Card>
-                )}
+                )} */}
 
 
                 {/* Additional Info */}
@@ -320,7 +389,12 @@ export default function ProductDetail() {
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                 {relatedProducts.map((relatedProduct) => (
-                  <Link key={relatedProduct.id} to={`/product/${relatedProduct.id}`} className="group">
+                  <Link
+                    key={relatedProduct.id}
+                    to="/product"
+                    state={{ id: relatedProduct.id }}
+                    className="group"
+                  >
                     <Card className="overflow-hidden hover:shadow-card transition-all duration-300">
                       <div className="aspect-[4/3] overflow-hidden">
                         <img
