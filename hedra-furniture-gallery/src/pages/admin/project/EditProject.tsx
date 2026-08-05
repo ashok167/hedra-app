@@ -28,10 +28,39 @@ type Project = {
   projectType: string;
   title: string;
   description: string;
-  imageUrl?: string;
+  imageUrl?: string | string[];
   client?: string;
   year?: string;
 };
+
+const parseProjectImages = (imageUrl?: string | string[]): string[] => {
+  if (Array.isArray(imageUrl)) {
+    return imageUrl.filter(
+      (image): image is string => typeof image === "string" && image.trim() !== ""
+    );
+  }
+
+  if (typeof imageUrl !== "string" || imageUrl.trim() === "") return [];
+
+  try {
+    const parsed = JSON.parse(imageUrl);
+
+    if (Array.isArray(parsed)) {
+      return parsed.filter(
+        (image): image is string => typeof image === "string" && image.trim() !== ""
+      );
+    }
+
+    return typeof parsed === "string" && parsed.trim() ? [parsed] : [];
+  } catch {
+    return [imageUrl];
+  }
+};
+
+const getImageSrc = (image: string) =>
+  /^(https?:|blob:|data:)/i.test(image)
+    ? image
+    : `${FILE_BASE_URL || ""}${image.startsWith("/") ? "" : "/"}${image}`;
 
 export default function EditProject() {
   const { isAuthenticated } = useAuth();
@@ -93,17 +122,7 @@ const [year, setYear] = useState("");
 
     setProject(projectData);
 
-let images: string[] = [];
-
-try {
-  images = projectData.imageUrl?.startsWith("[")
-    ? JSON.parse(projectData.imageUrl)
-    : [projectData.imageUrl];
-} catch {
-  images = [];
-}
-
-setExistingImages(images);
+setExistingImages(parseProjectImages(projectData.imageUrl));
 
 setProjectType(projectData.projectType || "");
 setTitle(projectData.title || "");
@@ -159,6 +178,7 @@ fd.append(
 );
 
 
+
 newImages.forEach((image) => {
   fd.append("images", image);
 });
@@ -189,6 +209,7 @@ await apiPutRequest(
     }
   };
 
+  
 
   return (
     <AdminLayout>
@@ -317,19 +338,21 @@ await apiPutRequest(
     <p className="text-sm font-medium mb-2">
       Current Images
     </p>
+    
 
    {existingImages.length > 0 ? (
   <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
   {existingImages.map((img: string, index: number) => (
   <div key={index} className="relative">
     <img
-      src={`${FILE_BASE_URL}${img}`}
+      src={getImageSrc(img)}
       alt={`Project ${index + 1}`}
       className="w-full h-32 object-cover rounded border"
       onError={(e) => {
-        console.log("Image failed:", `${FILE_BASE_URL}${img}`);
+        console.log("Image failed:", getImageSrc(img));
       }}
     />
+    
 
     <button
       type="button"
