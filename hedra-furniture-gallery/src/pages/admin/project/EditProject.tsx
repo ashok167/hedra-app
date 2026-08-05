@@ -185,6 +185,25 @@ await apiPutRequest(
       setSaving(false);
     }
   };
+  const getImageUrl = (img: string) => {
+  if (!img) return "";
+
+  // Already a complete URL
+  if (
+    img.startsWith("http://") ||
+    img.startsWith("https://") ||
+    img.startsWith("blob:")
+  ) {
+    return img;
+  }
+
+  const apiUrl = import.meta.env.VITE_API_BASE_URL;
+
+  // Remove /api from the API URL
+  const baseUrl = apiUrl.replace(/\/api\/?$/, "");
+
+  return `${baseUrl}${img.startsWith("/") ? "" : "/"}${img}`;
+};
 
   return (
     <AdminLayout>
@@ -323,13 +342,13 @@ await apiPutRequest(
           className="relative"
         >
           <img
-            src={`${import.meta.env.VITE_API_BASE_URL.replace(
-              "/api/",
-              ""
-            )}${img}`}
-            alt=""
-            className="w-full h-32 object-cover rounded border"
-          />
+  src={getImageUrl(img)}
+  alt={`Project ${index + 1}`}
+  className="w-full h-32 object-cover rounded border"
+  onError={(e) => {
+    console.error("Image failed:", getImageUrl(img));
+  }}
+/>
 
           <button
             type="button"
