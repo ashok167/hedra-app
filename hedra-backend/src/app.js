@@ -80,6 +80,7 @@ app.use(
         defaultSrc: ["'self'"],
         imgSrc: [
           "'self'",
+          "blob:",
           "data:",
           "https://images.unsplash.com",
           "https://i.ibb.co",              // ✅ ADD THIS
