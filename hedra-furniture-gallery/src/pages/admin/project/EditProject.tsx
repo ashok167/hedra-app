@@ -192,7 +192,8 @@ await apiPutRequest(
   if (img.startsWith("http://") || img.startsWith("https://") || img.startsWith("blob:")) {
     return img;
   }
-  const baseUrl = import.meta.env.VITE_FILE_BASE_URL;
+  const rawBase = import.meta.env.VITE_FILE_BASE_URL || import.meta.env.VITE_API_BASE_URL || "";
+  const baseUrl = rawBase.replace(/\/api\/?$/, ""); // strip trailing /api if present
   return `${baseUrl}${img.startsWith("/") ? "" : "/"}${img}`;
 };
 
