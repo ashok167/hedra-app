@@ -86,6 +86,7 @@ const [year, setYear] = useState("");
       `projects/getProjectById/${id}`,
       token
     );
+    console.log("Project data:", res);
 
     const projectData = res.project || res;
 
@@ -185,23 +186,12 @@ await apiPutRequest(
       setSaving(false);
     }
   };
-  const getImageUrl = (img: string) => {
+ const getImageUrl = (img: string) => {
   if (!img) return "";
-
-  // Already a complete URL
-  if (
-    img.startsWith("http://") ||
-    img.startsWith("https://") ||
-    img.startsWith("blob:")
-  ) {
+  if (img.startsWith("http://") || img.startsWith("https://") || img.startsWith("blob:")) {
     return img;
   }
-
-  const apiUrl = import.meta.env.VITE_API_BASE_URL;
-
-  // Remove /api from the API URL
-  const baseUrl = apiUrl.replace(/\/api\/?$/, "");
-
+  const baseUrl = import.meta.env.VITE_FILE_BASE_URL;
   return `${baseUrl}${img.startsWith("/") ? "" : "/"}${img}`;
 };
 
