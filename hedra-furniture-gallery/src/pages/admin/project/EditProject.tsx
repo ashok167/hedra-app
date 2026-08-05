@@ -187,10 +187,9 @@ await apiPutRequest(
       setSaving(false);
     }
   };
- const getImageUrl = (img: string) => {
+const getImageUrl = (img: string) => {
   if (!img) return "";
 
-  // Already a full URL or blob
   if (
     img.startsWith("http://") ||
     img.startsWith("https://") ||
@@ -199,9 +198,12 @@ await apiPutRequest(
     return img;
   }
 
-  const baseUrl = (import.meta.env.VITE_FILE_BASE_URL || "").replace(/\/$/, "");
+  const base = import.meta.env.VITE_FILE_BASE_URL.replace(/\/$/, "");
 
-  return `${baseUrl}${img.startsWith("/") ? "" : "/"}${img}`;
+  // Remove "/api" if the database path contains it
+  const cleanPath = img.replace(/^\/?api\//, "/");
+
+  return `${base}${cleanPath.startsWith("/") ? "" : "/"}${cleanPath}`;
 };
 
   return (
