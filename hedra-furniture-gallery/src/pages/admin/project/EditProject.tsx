@@ -189,11 +189,18 @@ await apiPutRequest(
   };
  const getImageUrl = (img: string) => {
   if (!img) return "";
-  if (img.startsWith("http://") || img.startsWith("https://") || img.startsWith("blob:")) {
+
+  // Already a full URL or blob
+  if (
+    img.startsWith("http://") ||
+    img.startsWith("https://") ||
+    img.startsWith("blob:")
+  ) {
     return img;
   }
-  const rawBase = import.meta.env.VITE_FILE_BASE_URL || import.meta.env.VITE_API_BASE_URL || "";
-  const baseUrl = rawBase.replace(/\/api\/?$/, ""); // strip trailing /api if present
+
+  const baseUrl = (import.meta.env.VITE_FILE_BASE_URL || "").replace(/\/$/, "");
+
   return `${baseUrl}${img.startsWith("/") ? "" : "/"}${img}`;
 };
 
