@@ -157,6 +157,7 @@ fd.append(
   JSON.stringify(existingImages)
 );
 
+
 newImages.forEach((image) => {
   fd.append("images", image);
 });
@@ -325,37 +326,33 @@ await apiPutRequest(
 
    {existingImages.length > 0 ? (
   <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-    {existingImages.map(
-      (img: string, index: number) => (
-        <div
-          key={index}
-          className="relative"
-        >
-          <img
-  src={getImageUrl(img)}
-  alt={`Project ${index + 1}`}
-  className="w-full h-32 object-cover rounded border"
-  onError={(e) => {
-    console.error("Image failed:", getImageUrl(img));
-  }}
-/>
+  {existingImages.map((img: string, index: number) => {
+  const url = getImageUrl(img);
+  if (!url) return null; // don't render a broken <img> for empty src
 
-          <button
-            type="button"
-            onClick={() =>
-              setExistingImages((prev) =>
-                prev.filter(
-                  (_, i) => i !== index
-                )
-              )
-            }
-            className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1"
-          >
-            <X className="h-4 w-4" />
-          </button>
-        </div>
-      )
-    )}
+  console.log("Rendering existing image:", img, "→", getImageUrl(img));
+  return (
+    <div key={img /* use the url itself, not index, as key */} className="relative">
+      <img
+        src={url}
+        alt={`Project ${index + 1}`}
+        className="w-full h-32 object-cover rounded border"
+        onError={(e) => {
+          console.error("Image failed:", url);
+        }}
+      />
+      <button
+        type="button"
+        onClick={() =>
+          setExistingImages((prev) => prev.filter((_, i) => i !== index))
+        }
+        className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1"
+      >
+        <X className="h-4 w-4" />
+      </button>
+    </div>
+  );
+})}
   </div>
 ) : (
   <div className="border rounded p-4 text-center">
