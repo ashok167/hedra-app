@@ -21,6 +21,7 @@ import {
   apiGetRequest,
   apiPutRequest,
 } from "../../../../service";
+const FILE_BASE_URL = import.meta.env.VITE_FILE_BASE_URL;
 
 type Project = {
   id: string;
@@ -187,24 +188,7 @@ await apiPutRequest(
       setSaving(false);
     }
   };
-const getImageUrl = (img: string) => {
-  if (!img) return "";
 
-  if (
-    img.startsWith("http://") ||
-    img.startsWith("https://") ||
-    img.startsWith("blob:")
-  ) {
-    return img;
-  }
-
-  const base = import.meta.env.VITE_FILE_BASE_URL.replace(/\/$/, "");
-
-  // Remove "/api" if the database path contains it
-  const cleanPath = img.replace(/^\/?api\//, "/");
-
-  return `${base}${cleanPath.startsWith("/") ? "" : "/"}${cleanPath}`;
-};
 
   return (
     <AdminLayout>
@@ -336,33 +320,30 @@ const getImageUrl = (img: string) => {
 
    {existingImages.length > 0 ? (
   <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-  {existingImages.map((img: string, index: number) => {
-  const url = getImageUrl(img);
-  if (!url) return null; // don't render a broken <img> for empty src
+  {existingImages.map((img: string, index: number) => (
+  <div key={index} className="relative">
+    <img
+      src={`${FILE_BASE_URL}${img}`}
+      alt={`Project ${index + 1}`}
+      className="w-full h-32 object-cover rounded border"
+      onError={(e) => {
+        console.log("Image failed:", `${FILE_BASE_URL}${img}`);
+      }}
+    />
 
-  console.log("Rendering existing image:", img, "→", getImageUrl(img));
-  return (
-    <div key={img /* use the url itself, not index, as key */} className="relative">
-      <img
-        src={url}
-        alt={`Project ${index + 1}`}
-        className="w-full h-32 object-cover rounded border"
-        onError={(e) => {
-          console.error("Image failed:", url);
-        }}
-      />
-      <button
-        type="button"
-        onClick={() =>
-          setExistingImages((prev) => prev.filter((_, i) => i !== index))
-        }
-        className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1"
-      >
-        <X className="h-4 w-4" />
-      </button>
-    </div>
-  );
-})}
+    <button
+      type="button"
+      onClick={() =>
+        setExistingImages((prev) =>
+          prev.filter((_, i) => i !== index)
+        )
+      }
+      className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1"
+    >
+      <X className="h-4 w-4" />
+    </button>
+  </div>
+))}
   </div>
 ) : (
   <div className="border rounded p-4 text-center">
