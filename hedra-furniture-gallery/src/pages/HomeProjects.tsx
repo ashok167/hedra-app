@@ -132,16 +132,14 @@ export default function HomeProjects() {
                       onClick={() => navigate(`/homeprojects/${project.id}`)}
                     >
                       <img
-                        src={`${import.meta.env.VITE_API_BASE_URL.replace(
-                          "/api/",
-                          ""
-                        )}${project.imageUrl?.startsWith("[")
-                            ? JSON.parse(project.imageUrl)[0]
-                            : project.imageUrl
-                          }`}
-                        alt={project.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                      />
+  src={`${import.meta.env.VITE_FILE_BASE_URL}${
+    project.imageUrl?.startsWith("[")
+      ? JSON.parse(project.imageUrl)[0]
+      : project.imageUrl
+  }`}
+  alt={project.title}
+  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+/>
                     </div>
 
                     <CardContent className="p-6">

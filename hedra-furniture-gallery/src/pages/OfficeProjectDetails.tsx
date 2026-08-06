@@ -63,10 +63,7 @@ export default function OfficeProjectDetails() {
     );
   }
 
-  const BASE_URL = import.meta.env.VITE_API_BASE_URL.replace(
-    "/api/",
-    ""
-  );
+  const BASE_URL = import.meta.env.VITE_FILE_BASE_URL;
 
   const nextImage = () => {
     setActiveImage((prev) =>
