@@ -846,7 +846,7 @@ const navigation = [
                   {
   name: "Benches & Diwans",
   href: "/accent-furniture",
-  state: { selectedSubcategory: "benches-diwans" },
+  state: { selectedSubcategory: "benches" },
 },
                   {
                     name: "Bean Bags",
@@ -922,7 +922,7 @@ const navigation = [
                   {
   name: "Workstations",
   href: "/office-tables",
-  state: { selectedSubcategory: "workstations" },
+  state: { selectedSubcategory: "worktables" },
 },
                   {
                     name: "Height Adjustable Tables",

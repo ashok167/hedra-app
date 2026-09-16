@@ -420,7 +420,7 @@ const SUBCATEGORY_MAP: Record<string, { value: string; label: string }[]> = {
     { value: "armchairs", label: "Armchairs" },
     { value: "ottomans", label: "Ottomans" },
     { value: "poufs", label: "Poufs" },
-    { value: "benches", label: "Benches" },
+    { value: "benches", label: "Benches & Diwans" },
     { value: "bean-bags", label: "Bean Bags" },
   ],
 
@@ -441,7 +441,7 @@ const SUBCATEGORY_MAP: Record<string, { value: string; label: string }[]> = {
     { value: "office-tables", label: "All Office Tables" },
     { value: "boss-tables", label: "Boss Tables" },
     { value: "conference-room-tables", label: "Conference Room Tables" },
-    { value: "worktables", label: "Worktables" },
+    { value: "worktables", label: "Workstations" },
     { value: "height-adjustable-tables", label: "Height Adjustable Tables" },
   ],
 

@@ -258,7 +258,7 @@ export type ProductCategory =
   | "armchairs"
   | "ottomans"
   | "poufs"
-  | "benches-diwans"
+  | "benches"
   | "bean-bags"
   | "executive-chairs"
   | "boss-chairs"
@@ -269,7 +269,7 @@ export type ProductCategory =
   | "public-seatings"
   | "boss-tables"
   | "conference-room-tables"
-  | "workstations"
+  | "worktables"
   | "height-adjustable-tables"
   | "bed-headboards"
   | "table-bases"
@@ -317,7 +317,7 @@ export const PRODUCT_CATEGORIES = [
   { value: "armchairs", label: "Armchairs" },
   { value: "ottomans", label: "Ottomans" },
   { value: "poufs", label: "Poufs" },
-  { value: "benches-diwans", label: "Benches & Diwans" },
+  { value: "benches", label: "Benches & Diwans" },
   { value: "bean-bags", label: "Bean Bags" },
 
   { value: "executive-chairs", label: "Executive Chairs" },
@@ -330,7 +330,7 @@ export const PRODUCT_CATEGORIES = [
 
   { value: "boss-tables", label: "Boss Tables" },
   { value: "conference-room-tables", label: "Conference Room Tables" },
-  { value: "workstations", label: "Workstations" },
+  { value: "worktables", label: "Workstations" },
   { value: "height-adjustable-tables", label: "Height Adjustable Tables" },
 
   
