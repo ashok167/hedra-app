@@ -377,14 +377,14 @@ export default function Contact() {
 
     {/* Exact Edendek Location */}
     <div className="aspect-[21/9] rounded-lg overflow-hidden bg-muted">
-      <iframe
-        src="https://www.google.com/maps?q=13.198969,80.158865&z=17&output=embed"
-        className="w-full h-full border-0"
-        loading="lazy"
-        allowFullScreen
-        referrerPolicy="no-referrer-when-downgrade"
-        title="Edendek Showroom Location"
-      />
+     <iframe
+  src="https://www.google.com/maps?q=13.198969,80.158865&z=17&output=embed"
+  className="w-full h-full border-0"
+  loading="lazy"
+  allowFullScreen
+  referrerPolicy="strict-origin-when-cross-origin"
+  title="Edendek Showroom Location"
+/>
     </div>
 
   </div>
