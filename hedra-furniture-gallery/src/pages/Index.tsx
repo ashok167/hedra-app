@@ -13,7 +13,8 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
 import 'swiper/css/autoplay';
 import "swiper/css/navigation";
-import { Autoplay, Navigation } from 'swiper/modules';
+import "swiper/css/pagination";
+import { Autoplay, Navigation, Pagination } from 'swiper/modules';
 import FadeInSection from '@/components/ui/FadeInSection';
 import { ChevronRight,ChevronLeft } from "lucide-react";
 import manufacturerIcon from "../assets/icons/manufacturing.png";
@@ -114,6 +115,8 @@ const [testimonialLoading, setTestimonialLoading] = useState(false);
 const [testimonialError, setTestimonialError] = useState<string | null>(null);
 const prevRef = useRef<HTMLButtonElement>(null);
 const nextRef = useRef<HTMLButtonElement>(null);
+const bestPrevRef = useRef<HTMLButtonElement>(null);
+const bestNextRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     (async () => {
@@ -186,29 +189,31 @@ const nextRef = useRef<HTMLButtonElement>(null);
       id: 1,
       type: "video",
       video: heroVideo,
-      title: "Crafting Excellence in",
-      highlight: "Furniture Design",
+      title: "Furniture, Crafted Around",
+      highlight: "Your Vision.",
       description:
-        "Where tradition meets innovation. Discover our collection of handcrafted furniture that transforms spaces into experiences.",
+        "From thoughtfully designed collections to fully customized furniture, Edendek brings your ideas to life through skilled craftsmanship and in-house manufacturing.",
+      tagline: "Custom Made • In-House Manufacturing • No Minimum Order",
     },
-    {
-      id: 2,
-      image:
-        "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1920&q=80",
-      title: "Inspired Living Spaces",
-      highlight: "Designed for You",
-      description:
-        "From modern minimalism to classic charm, our furniture reflects your personality and lifestyle.",
-    },
-    {
-      id: 4,
-      image:
-        "https://images.unsplash.com/photo-1524758631624-e2822e304c36?auto=format&fit=crop&w=1920&q=80",
-      title: "Modern Comfort",
-      highlight: "Redefined",
-      description:
-        "Experience unmatched comfort with our modern furniture designs.",
-    },
+   {
+    id: 2,
+    image: "/images/hero-black-sofa.png",
+    title: "Designed to Fit.",
+    highlight: "Made to Belong.",
+    description:
+      "Furniture tailored to your space, style and requirements - with the freedom to choose dimensions, materials, finishes and upholstery.",
+    tagline: "Custom Made • In-House Manufacturing • No Minimum Order",
+  },
+
+  {
+    id: 4,
+    image: "/images/hero-beige-sofa.png",
+    title: "Designed to Your Vision.",
+    highlight: "Crafted In-House.",
+    description:
+      "From carpentry and metalwork to upholstery and finishing, our skilled craftsmen bring every piece together under one roof.",
+    tagline: "Custom Made • In-House Manufacturing • No Minimum Order",
+  },
   ];
 
   const clientLogos = [
@@ -337,7 +342,7 @@ const PREVIEW_SUBCATEGORY_ROUTES: Record<string, { parent: string; subcategory: 
   "Boss Tables":        { parent: "office-tables", subcategory: "boss-tables" },
 };
 
-const renderPreviewItem = (def: PreviewDef) => {
+const renderPreviewItem = (def: PreviewDef, index: number) => {
   const prods = findPreviewProducts(def, categories, products, getProductsByCategory);
   const firstWithImg = prods.find(p => !!getFirstImageFromProduct(p, FILE_BASE));
   const img = firstWithImg ? getFirstImageFromProduct(firstWithImg, FILE_BASE) : null;
@@ -359,16 +364,10 @@ const renderPreviewItem = (def: PreviewDef) => {
   }
 
   const clickable = !!categories?.length;
+  const productListHref = href === "#" ? href : `${href}#product-grid`;
 
-  return (
-    <Link
-      key={def.label}
-      to={href}
-      state={linkState}
-      className="group flex flex-col items-center"
-      onClick={(e) => { if (!clickable) e.preventDefault(); }}
-      aria-label={clickable ? `View ${def.label}` : `${def.label} (coming soon)`}
-    >
+  const previewContent = (
+    <>
       <div className="p-1 rounded-full bg-white shadow-sm ring-1 ring-gray-200">
         <div className="h-[clamp(7.5rem,38vw,9rem)] w-[clamp(7.5rem,38vw,9rem)] sm:h-40 sm:w-40 rounded-full overflow-hidden ring-1 ring-gray-300 group-hover:ring-gray-400 transition">
           {img ? (
@@ -386,7 +385,32 @@ const renderPreviewItem = (def: PreviewDef) => {
       <span className="mt-3 max-w-[9rem] text-sm sm:text-base font-medium leading-tight text-[#14294C] text-center">
         {def.label}
       </span>
-    </Link>
+    </>
+  );
+
+  return (
+    <React.Fragment key={def.label}>
+      {index < 4 && (
+        <Link
+          to={productListHref}
+          state={linkState}
+          className="group flex flex-col items-center sm:hidden"
+          onClick={(e) => { if (!clickable) e.preventDefault(); }}
+          aria-label={clickable ? `View all ${def.label} products` : `${def.label} (coming soon)`}
+        >
+          {previewContent}
+        </Link>
+      )}
+      <Link
+        to={href}
+        state={linkState}
+        className="group hidden flex-col items-center sm:flex"
+        onClick={(e) => { if (!clickable) e.preventDefault(); }}
+        aria-label={clickable ? `View ${def.label}` : `${def.label} (coming soon)`}
+      >
+        {previewContent}
+      </Link>
+    </React.Fragment>
   );
 };
 
@@ -436,9 +460,9 @@ const renderPreviewItem = (def: PreviewDef) => {
       <div className="sm:hidden mx-auto max-w-xs">
         {steps.map((s, i) => (
           <div key={s.label} className="flex flex-col items-center">
-            <div className="flex w-full items-center gap-4 rounded-xl border border-gray-100 bg-gray-50/70 px-5 py-3">
+            <div className="flex w-full flex-col items-center justify-center rounded-xl border border-gray-100 bg-gray-50/70 px-5 py-4 text-center">
               <img src={s.icon} alt="" className="h-12 w-12 shrink-0 object-contain grayscale opacity-70" loading="lazy" />
-              <span className="text-sm font-medium text-gray-900">{s.label}</span>
+              <span className="mt-2 text-sm font-medium text-gray-900">{s.label}</span>
             </div>
             {i < steps.length - 1 && <ChevronRight className="my-1 h-6 w-6 rotate-90 text-gray-400" aria-hidden="true" />}
           </div>
@@ -616,12 +640,16 @@ useEffect(() => {
               slidesPerView={1}
               loop
               speed={1200}
-              autoplay={{ delay: 3500, disableOnInteraction: false }}
+              autoplay={{ delay: 6500, disableOnInteraction: false }}
               navigation={{
                 prevEl: ".hero-prev",
                 nextEl: ".hero-next",
               }}
-              modules={[Autoplay, Navigation]}
+              pagination={{
+                el: ".hero-pagination",
+                clickable: true,
+              }}
+              modules={[Autoplay, Navigation, Pagination]}
               className="h-full"
 
             >
@@ -665,25 +693,34 @@ useEffect(() => {
                       </p>
 
                       <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                        <Link to="/catalog" className="w-full sm:w-auto">
+                        <Link to="/product-category" className="w-full sm:w-auto">
                           <Button
                             size="lg"
                             className="w-full bg-[#14294C] hover:bg-[#0F1F3A]"
                           >
-                            Explore Catalog
+                            Explore Furniture
                             <ArrowRight className="ml-2 h-5 w-5" />
                           </Button>
                         </Link>
 
-                        <Link to="/contact" className="w-full sm:w-auto">
+                        <a
+                          href="https://wa.me/917603998893?text=Hi%21%20%0AI%20am%20interested%20in%20purchasing%20furniture%20from%20Edendek.%0AI%20have%20viewed%20your%20products%20at%20edendek.com"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="w-full sm:w-auto"
+                        >
                           <Button
                             size="lg"
                             className="w-full bg-[#b53e1d] hover:bg-[#9E3518]"
                           >
-                            Get Consultation
+                            Get a Consultation
                           </Button>
-                        </Link>
+                        </a>
                       </div>
+
+                      <p className="mt-5 text-sm sm:text-base font-medium tracking-wide text-white/90">
+                        {slide.tagline}
+                      </p>
                     </div>
                   </div>
                 </SwiperSlide>
@@ -694,6 +731,9 @@ useEffect(() => {
 
             {/* RIGHT ARROW */}
             <button className="hero-next swiper-button-next" />
+
+            {/* Mobile slide indicators */}
+            <div className="hero-pagination" />
           </div>
         </section>
 
@@ -703,7 +743,14 @@ useEffect(() => {
           <section className="py-14 bg-muted/30">
 
             <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-
+              <div className="text-center mb-10">
+                <h2 className="text-3xl md:text-4xl font-bold text-[#14294C]">
+                  Explore Our Furniture
+                </h2>
+                <p className="mt-3 text-gray-700 max-w-3xl mx-auto text-base sm:text-lg">
+                  Discover thoughtfully designed furniture for living spaces, bedrooms, workspaces, hospitality and more.
+                </p>
+              </div>
 
               {/* Row 1: 2 cols (xs), 3 cols (sm), 5 cols (lg) */}
               <div
@@ -716,12 +763,20 @@ useEffect(() => {
 
               {/* Row 2: 2 cols (xs), 3 cols (sm), 4 cols (lg) */}
               <div
-                className="mt-8 grid grid-cols-[repeat(2,auto)] sm:grid-cols-[repeat(3,auto)] lg:grid-cols-[repeat(4,auto)]
+                className="mt-8 hidden sm:grid sm:grid-cols-[repeat(3,auto)] lg:grid-cols-[repeat(4,auto)]
              justify-center gap-x-2 gap-y-4 sm:gap-x-3 sm:gap-y-6 mx-auto"
               >
                 {row2.map(renderPreviewItem)}
               </div>
 
+              <div className="text-center mt-12 max-w-3xl mx-auto">
+                <h2 className="text-2xl sm:text-3xl font-bold text-[#14294C]">
+                  One Piece or an Entire Project.
+                </h2>
+                <p className="mt-3 text-gray-700 text-base sm:text-lg leading-relaxed">
+                  There’s no minimum order at Edendek. Whether you need a single custom piece for your home or furniture for an entire residential, commercial or hospitality project, we’re ready to build it.
+                </p>
+              </div>
 
             </div>
           </section>
@@ -738,11 +793,15 @@ useEffect(() => {
               <div className="max-w-6xl mx-auto rounded-xl bg-white">
                 {/* ----------- Why Choose Us ----------- */}
                 <div className="text-center mb-12">
-                  <h2 className="text-3xl md:text-4xl font-bold !text-[#14294C]">About Us</h2>
-                  <p className="mt-3 text-gray-900 max-w-2xl mx-auto">
-                    We are not resellers. We are direct manufacturers with control over every stage of production.
-                    This ensures competitive pricing, faster timelines, and a consistent standard of quality.
-                  </p>
+                  <h2 className="text-3xl md:text-4xl font-bold !text-[#14294C]">More Than Furniture. Made Around You.</h2>
+                  <div className="mt-4 text-gray-900 max-w-3xl mx-auto space-y-4">
+                    <p>
+                      Edendek is a furniture manufacturer creating thoughtfully designed and customizable furniture for homes, workplaces, hospitality spaces and design-led projects.
+                    </p>
+                    <p>
+                      With in-house craftsmanship and a wide range of materials, dimensions, finishes and upholstery options, we give you the freedom to create furniture that works beautifully within your space.
+                    </p>
+                  </div>
                 </div>
 
                 {/* Traditional Retail */}
@@ -846,11 +905,11 @@ useEffect(() => {
                     <ul className="space-y-4">
                       {[
                         { title: "Unlimited Customization", desc: "Bring Any Design to Life.", icon: BenefitIcons.customization },
-                        { title: "Extensive Material Selection", desc: "1200+ Fabric & Leatherette colour Options.", icon: BenefitIcons.materials },
+                        { title: "Extensive Material Selection", desc: "1000+ Fabric & Leatherette & Nappa Leather Colour Options.", icon: BenefitIcons.materials },
                         { title: "Reliable Project Timing", desc: "Guaranteed On-Time Delivery.", icon: BenefitIcons.timing },
                         { title: "Confidence in Quality", desc: "Superior Materials & Craftsmanship.", icon: BenefitIcons.quality },
-                        { title: "Perfect Proportions", desc: "Furniture Tailored to Your Exact Space.", icon: BenefitIcons.proportions },
-                        { title: "A True Partnership", desc: "We Execute Your Unique Vision.", icon: BenefitIcons.partnership },
+                        { title: "No Minimum Order", desc: "From One Statement Piece to Complete Projects.", icon: BenefitIcons.proportions },
+                        { title: "Seamless Collaboration", desc: "Dedicated Support from Concept to Completion.", icon: BenefitIcons.partnership },
                       ].map((item, i) => (
                         <li key={i} className="flex items-center gap-3">
                           <span
@@ -879,32 +938,62 @@ useEffect(() => {
                     </h3>
 
                     <ul className="space-y-4">
-                      {[
-                        { title: "Significant Cost Savings", desc: "by Cutting Out the Middleman.", icon: BenefitIcons.savings },
-                        { title: "Fully Customize Designs", desc: "Fabrics, and Branding.", icon: BenefitIcons.customize },
-                        { title: "Guaranteed Commercial-Grade", desc: "Quality and Durability.", icon: BenefitIcons.commercial },
-                        { title: "Direct Expert Support", desc: "and Streamlined Logistics.", icon: BenefitIcons.support },
-                        { title: "Access to a Long-Term Supply", desc: "of Parts and Replacements.", icon: BenefitIcons.supply },
-                        { title: "Priority Service", desc: "and Volume-Based Pricing.", icon: BenefitIcons.priority },
-                      ].map((item, i) => (
-                        <li key={i} className="flex items-center gap-3">
-                          <span
-                            className="
-                      mt-0.5 inline-flex h-9 w-9 md:h-10 md:w-10 shrink-0 items-center justify-center
-                      rounded-md bg-white text-[#b53e1d]
-                      [&>svg]:h-5 [&>svg]:w-5 md:[&>svg]:h-6 md:[&>svg]:w-6
-                    "
-                          >
-                            {item.icon}
-                          </span>
-                          <div>
-                            <p className="font-medium text-gray-900">
-                              {item.title}: {item.desc}
-                            </p>
-                          </div>
-                        </li>
-                      ))}
-                    </ul>
+  {[
+    {
+      title: "Significant Cost Savings",
+      desc: "by Cutting Out the Middleman.",
+      icon: BenefitIcons.savings,
+    },
+    {
+      title: "Fully Customize",
+      desc: "Designs, Fabrics, and Branding.",
+      icon: BenefitIcons.customize,
+    },
+    {
+      title: "Guaranteed Commercial-Grade",
+      desc: "Quality and Durability.",
+      icon: BenefitIcons.commercial,
+    },
+    {
+      title: "Direct Expert Support",
+      desc: "and Streamlined Logistics.",
+      icon: BenefitIcons.support,
+    },
+    {
+      title: "Access to a Long-Term Supply",
+      desc: "of Parts and Replacements.",
+      icon: BenefitIcons.supply,
+    },
+    {
+      title: "Priority Service",
+      desc: "and Volume-Based Pricing.",
+      icon: BenefitIcons.priority,
+    },
+  ].map((item, i) => (
+    <li key={i} className="flex items-center gap-3">
+      <span
+        className="
+          mt-0.5 inline-flex h-9 w-9 md:h-10 md:w-10 shrink-0
+          items-center justify-center rounded-md bg-white text-[#b53e1d]
+          [&>svg]:h-5 [&>svg]:w-5 md:[&>svg]:h-6 md:[&>svg]:w-6
+        "
+      >
+        {item.icon}
+      </span>
+
+
+  <div>
+    <p className="font-medium text-gray-900">
+      {item.title} {item.desc}
+    </p>
+  </div>
+</li>
+
+
+))}
+
+</ul>
+
                   </div>
 
                 </div>
@@ -934,8 +1023,8 @@ useEffect(() => {
 
               {bestLoading && (
                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
-                  {[...Array(8)].map((_, i) => (
-                    <Card key={i} className="overflow-hidden">
+                  {[...Array(4)].map((_, i) => (
+                    <Card key={i} className={`overflow-hidden ${i > 1 ? "hidden lg:block" : ""}`}>
                       <div className="aspect-[4/3] animate-pulse bg-gray-100" />
                       <CardContent className="py-4">
                         <div className="h-4 w-2/3 bg-gray-100 rounded animate-pulse" />
@@ -950,7 +1039,35 @@ useEffect(() => {
               )}
 
               {!bestLoading && !bestError && (
-                <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
+                <div className="relative px-7 sm:px-10 lg:px-12">
+                  <Swiper
+                    modules={[Autoplay, Navigation]}
+                    slidesPerView={2}
+                    spaceBetween={12}
+                    slidesPerGroup={1}
+                    rewind={bestSellers.length > 2}
+                    autoplay={{
+                      delay: 3500,
+                      disableOnInteraction: false,
+                      pauseOnMouseEnter: true,
+                    }}
+                    navigation={{
+                      prevEl: bestPrevRef.current,
+                      nextEl: bestNextRef.current,
+                    }}
+                    onBeforeInit={(swiper) => {
+                      // @ts-ignore
+                      swiper.params.navigation.prevEl = bestPrevRef.current;
+                      // @ts-ignore
+                      swiper.params.navigation.nextEl = bestNextRef.current;
+                    }}
+                    breakpoints={{
+                      1024: {
+                        slidesPerView: 4,
+                        spaceBetween: 24,
+                      },
+                    }}
+                  >
                   {bestSellers.map((p: any) => {
                     const img = getFirstImageFromProduct(p, FILE_BASE);
                     const title = p?.name || p?.title || "Untitled";
@@ -962,15 +1079,15 @@ useEffect(() => {
                     const canOpen = !!pid;
 
                     return (
+                      <SwiperSlide key={pid || p?.slug || title} className="h-auto">
                       <Link
-                        to="/product"
+                        to={canOpen ? `/product-details/${encodeURIComponent(String(pid))}` : "#"}
                         state={canOpen ? { id: pid } : undefined}
                         onClick={(e) => { if (!canOpen) e.preventDefault(); }}
-                        key={pid || p?.slug || title}
-                        className="block"
+                        className="block h-full"
                         aria-label={canOpen ? `Open ${title}` : `${title} (unavailable)`}
                       >
-                        <Card className="overflow-hidden group hover:shadow-elegant transition-all">
+                        <Card className="h-full overflow-hidden group hover:shadow-elegant transition-all">
                           <div className="aspect-[4/3] bg-gray-100">
                             {img ? (
                               <img
@@ -1017,8 +1134,29 @@ useEffect(() => {
                           </CardContent>
                         </Card>
                       </Link>
+                      </SwiperSlide>
                     );
                   })}
+                  </Swiper>
+
+                  {bestSellers.length > 2 && (
+                    <>
+                      <button
+                        ref={bestPrevRef}
+                        aria-label="Previous best sellers"
+                        className={`absolute top-1/2 -translate-y-1/2 left-0 z-10 flex h-10 w-10 items-center justify-center rounded-full border border-gray-200 bg-white shadow-md transition hover:bg-gray-50 disabled:opacity-40 ${bestSellers.length <= 4 ? "lg:hidden" : ""}`}
+                      >
+                        <ChevronLeft className="h-5 w-5 text-[#14294C]" />
+                      </button>
+                      <button
+                        ref={bestNextRef}
+                        aria-label="Next best sellers"
+                        className={`absolute top-1/2 -translate-y-1/2 right-0 z-10 flex h-10 w-10 items-center justify-center rounded-full border border-gray-200 bg-white shadow-md transition hover:bg-gray-50 disabled:opacity-40 ${bestSellers.length <= 4 ? "lg:hidden" : ""}`}
+                      >
+                        <ChevronRight className="h-5 w-5 text-[#14294C]" />
+                      </button>
+                    </>
+                  )}
                 </div>
               )}
 
@@ -1227,11 +1365,25 @@ useEffect(() => {
           <section className="py-16 text-center bg-[linear-gradient(90deg,#293654_0%,#88747B_50%,#B78A83_100%)]">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8">
               <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-                Ready to Transform Your Space?
+                Make It Yours.
               </h2>
               <p className="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
-                Get in touch with our design experts and discover how we can create the perfect furniture for your home or office.
+                Choose the dimensions, materials, colours, upholstery and finishes to create furniture that fits your space and reflects your style.
               </p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8 max-w-6xl mx-auto text-left">
+                {[
+                  { title: "Dimensions", description: "Tailored to suit your space and requirements." },
+                  { title: "Materials", description: "Choose from a wide range of carefully selected materials and finishes." },
+                  { title: "Upholstery", description: "Explore 1200+ fabric, leatherette and Nappa leather colour options." },
+                  { title: "Design", description: "Adapt an existing design or bring your own idea to life." },
+                ].map((option) => (
+                  <div key={option.title} className="rounded-xl border border-white/25 bg-white/10 p-5 backdrop-blur-sm">
+                    <h3 className="text-xl font-semibold text-white mb-2">{option.title}</h3>
+                    <p className="text-white/90 leading-relaxed">{option.description}</p>
+                  </div>
+                ))}
+              </div>
+
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Link to="/contact" className="w-full sm:w-auto">
                   <Button
@@ -1242,7 +1394,7 @@ useEffect(() => {
                     Start Your Project
                   </Button>
                 </Link>
-                <Link to="/catalog" className="w-full sm:w-auto">
+                <Link to="/product-category" className="w-full sm:w-auto">
                   <Button variant="outline" size="lg" className="w-full sm:w-auto border-white text-black hover:bg-white hover:text-primary">
                     Browse Catalog
                   </Button>

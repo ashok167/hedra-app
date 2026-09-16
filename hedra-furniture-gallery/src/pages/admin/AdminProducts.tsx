@@ -55,7 +55,7 @@ const handleDeleteProduct = async (productId: string, productName: string) => {
 };
 
 const handleViewProduct = (productId: string) => {
-  navigate("/product", { state: { id: productId } });
+  navigate(`/product-details/${encodeURIComponent(productId)}`, { state: { id: productId } });
 };
 
 

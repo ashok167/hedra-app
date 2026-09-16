@@ -16,6 +16,7 @@ import { PRODUCT_CATEGORIES, ProductCategory } from '@/types/product';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { ChevronLeft, ChevronRight, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { getProductCategoryPath } from '@/lib/productCategoryRoute';
 import type { Variants } from "framer-motion";
 
 const container: Variants = {
@@ -162,8 +163,1286 @@ export default function Catalog() {
     }
   };
 
+const openCategoryPdfPreview = async (
+  categoryName: string,
+  categoryProducts: typeof products
+) => {
+  if (!categoryProducts || categoryProducts.length === 0) {
+    alert("No products available in this category.");
+    return;
+  }
+
+  // ==========================================
+  // OPEN PREVIEW WINDOW
+  // ==========================================
+
+  const previewWindow = window.open("", "_blank");
+
+  if (!previewWindow) {
+    alert("Please allow popups to preview the catalog.");
+    return;
+  }
+
+  previewWindow.document.write(`
+    <html>
+      <head>
+        <title>Generating Catalog...</title>
+      </head>
+
+      <body
+        style="
+          margin: 0;
+          height: 100vh;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          font-family: Arial, sans-serif;
+        "
+      >
+        <div style="text-align:center;">
+          <h2>Generating Catalog Preview...</h2>
+          <p>Please wait...</p>
+        </div>
+      </body>
+    </html>
+  `);
+
+  previewWindow.document.close();
+
+  // ==========================================
+  // CREATE PDF
+  // ==========================================
+
+  const pdf = new jsPDF("p", "mm", "a4");
+
+  const pageWidth =
+    pdf.internal.pageSize.getWidth();
+
+  const pageHeight =
+    pdf.internal.pageSize.getHeight();
+
+  const margin = 15;
+
+  const contentWidth =
+    pageWidth - margin * 2;
 
 
+  // ==========================================
+  // FORMAT VALUE
+  // ==========================================
+
+  const formatValue = (
+    value: any
+  ): string => {
+
+    if (
+      value === null ||
+      value === undefined
+    ) {
+      return "";
+    }
+
+    if (typeof value === "string") {
+      return value;
+    }
+
+    if (typeof value === "number") {
+      return String(value);
+    }
+
+    if (typeof value === "boolean") {
+      return String(value);
+    }
+
+    if (Array.isArray(value)) {
+
+      return value
+        .map((item) => {
+
+          // If item is { key, value }
+          if (
+            typeof item === "object" &&
+            item !== null &&
+            "value" in item
+          ) {
+            return formatValue(
+              item.value
+            );
+          }
+
+          return formatValue(item);
+
+        })
+        .filter(Boolean)
+        .join(", ");
+    }
+
+    if (typeof value === "object") {
+
+      return Object.values(value)
+        .map((item) =>
+          formatValue(item)
+        )
+        .filter(Boolean)
+        .join(", ");
+    }
+
+    return String(value);
+  };
+
+
+  // ==========================================
+  // PARSE DATA
+  // ==========================================
+
+  const parseData = (
+    data: any
+  ): any => {
+
+    if (!data) {
+      return null;
+    }
+
+    if (typeof data === "string") {
+
+      try {
+
+        return JSON.parse(data);
+
+      } catch {
+
+        return data;
+
+      }
+    }
+
+    return data;
+  };
+
+
+  // ==========================================
+  // NORMALIZE DATA INTO KEY/VALUE ROWS
+  //
+  // Supports:
+  //
+  // [
+  //   { key: "Product Type", value: "Table" }
+  // ]
+  //
+  // OR
+  //
+  // {
+  //   "Product Type": "Table"
+  // }
+  // ==========================================
+
+  const normalizeEntries = (
+    data: any
+  ): Array<{
+    key: string;
+    value: any;
+  }> => {
+
+    const parsed =
+      parseData(data);
+
+    if (!parsed) {
+      return [];
+    }
+
+
+    // ========================================
+    // ARRAY FORMAT
+    // [
+    //   {
+    //     key: "Product Type",
+    //     value: "Executive Conference Table"
+    //   }
+    // ]
+    // ========================================
+
+    if (Array.isArray(parsed)) {
+
+      return parsed
+        .map((item) => {
+
+          if (
+            typeof item === "object" &&
+            item !== null
+          ) {
+
+            // { key: "...", value: "..." }
+
+            if (
+              "key" in item &&
+              "value" in item
+            ) {
+
+              return {
+                key: String(
+                  item.key
+                ),
+
+                value:
+                  item.value,
+              };
+
+            }
+
+
+            // Alternative:
+            // { name: "...", value: "..." }
+
+            if (
+              "name" in item &&
+              "value" in item
+            ) {
+
+              return {
+                key: String(
+                  item.name
+                ),
+
+                value:
+                  item.value,
+              };
+
+            }
+
+
+            // Alternative:
+            // { label: "...", value: "..." }
+
+            if (
+              "label" in item &&
+              "value" in item
+            ) {
+
+              return {
+                key: String(
+                  item.label
+                ),
+
+                value:
+                  item.value,
+              };
+
+            }
+
+
+            // Normal object inside array
+
+            const entries =
+              Object.entries(item);
+
+            if (
+              entries.length === 1
+            ) {
+
+              return {
+                key:
+                  String(
+                    entries[0][0]
+                  ),
+
+                value:
+                  entries[0][1],
+              };
+
+            }
+
+          }
+
+          return null;
+
+        })
+        .filter(
+          (
+            item
+          ): item is {
+            key: string;
+            value: any;
+          } => item !== null
+        );
+    }
+
+
+    // ========================================
+    // OBJECT FORMAT
+    //
+    // {
+    //   "Product Type":
+    //     "Executive Conference Table"
+    // }
+    // ========================================
+
+    if (
+      typeof parsed === "object" &&
+      parsed !== null
+    ) {
+
+      // Special case:
+      // { key: "...", value: "..." }
+
+      if (
+        "key" in parsed &&
+        "value" in parsed
+      ) {
+
+        return [
+          {
+            key:
+              String(
+                parsed.key
+              ),
+
+            value:
+              parsed.value,
+          },
+        ];
+      }
+
+
+      return Object.entries(
+        parsed
+      )
+        .filter(
+          ([key, value]) =>
+            Boolean(key) &&
+            formatValue(value)
+        )
+        .map(
+          ([key, value]) => ({
+            key,
+            value,
+          })
+        );
+    }
+
+
+    return [];
+  };
+
+
+  // ==========================================
+  // LOAD IMAGE
+  // ==========================================
+
+  const loadImage = (
+    imageUrl: string
+  ): Promise<HTMLImageElement | null> => {
+
+    return new Promise(
+      (resolve) => {
+
+        const image =
+          new Image();
+
+        image.crossOrigin =
+          "anonymous";
+
+        image.onload = () => {
+          resolve(image);
+        };
+
+        image.onerror = () => {
+          resolve(null);
+        };
+
+        image.src =
+          imageUrl;
+
+      }
+    );
+
+  };
+
+
+  // ==========================================
+  // DRAW INFORMATION CARD
+  //
+  // RESULT:
+  //
+  // Specifications
+  //
+  // Product Type     Executive Conference Table
+  // -----------------------------------------
+  //
+  // Table Shape      Rectangular
+  // -----------------------------------------
+  // ==========================================
+
+  const drawInfoCard = (
+    title: string,
+    data: any,
+    startY: number
+  ) => {
+
+    // ========================================
+    // GET PROPER KEY/VALUE ROWS
+    // ========================================
+
+    const entries =
+      normalizeEntries(data);
+
+
+    if (
+      entries.length === 0
+    ) {
+
+      return startY;
+
+    }
+
+
+    // ========================================
+    // CARD SETTINGS
+    // ========================================
+
+    const boxX =
+      margin;
+
+    const boxWidth =
+      contentWidth;
+
+
+    // KEY COLUMN
+
+    const keyColumnWidth =
+      65;
+
+
+    // VALUE COLUMN
+
+    const valueColumnWidth =
+      boxWidth -
+      keyColumnWidth -
+      20;
+
+
+    // ========================================
+    // PREPARE ROWS
+    // ========================================
+
+    const rows =
+      entries.map(
+        (item) => {
+
+          const keyText =
+            item.key;
+
+          const valueText =
+            formatValue(
+              item.value
+            );
+
+
+          const keyLines =
+            pdf.splitTextToSize(
+              keyText,
+              keyColumnWidth - 8
+            );
+
+
+          const valueLines =
+            pdf.splitTextToSize(
+              valueText,
+              valueColumnWidth
+            );
+
+
+          const maxLines =
+            Math.max(
+              keyLines.length,
+              valueLines.length
+            );
+
+
+          const rowHeight =
+            Math.max(
+              14,
+              maxLines * 5 + 8
+            );
+
+
+          return {
+
+            keyLines,
+
+            valueLines,
+
+            rowHeight,
+
+          };
+
+        }
+      );
+
+
+    // ========================================
+    // CARD HEIGHT
+    // ========================================
+
+    const titleHeight =
+      18;
+
+
+    const rowsHeight =
+      rows.reduce(
+        (total, row) =>
+          total +
+          row.rowHeight,
+        0
+      );
+
+
+    const totalHeight =
+      titleHeight +
+      rowsHeight +
+      8;
+
+
+    // ========================================
+    // CHECK PAGE SPACE
+    // ========================================
+
+    if (
+      startY +
+        totalHeight >
+      pageHeight - 20
+    ) {
+
+      pdf.addPage();
+
+      startY = 20;
+
+    }
+
+
+    const boxY =
+      startY;
+
+
+    // ========================================
+    // CARD BACKGROUND
+    // ========================================
+
+    pdf.setFillColor(
+      248,
+      248,
+      248
+    );
+
+
+    pdf.roundedRect(
+      boxX,
+      boxY,
+      boxWidth,
+      totalHeight,
+      4,
+      4,
+      "F"
+    );
+
+
+    // ========================================
+    // CARD BORDER
+    // ========================================
+
+    pdf.setDrawColor(
+      210,
+      210,
+      210
+    );
+
+
+    pdf.setLineWidth(
+      0.4
+    );
+
+
+    pdf.roundedRect(
+      boxX,
+      boxY,
+      boxWidth,
+      totalHeight,
+      4,
+      4,
+      "S"
+    );
+
+
+    // ========================================
+    // TITLE
+    // ========================================
+
+    let y =
+      boxY + 12;
+
+
+    pdf.setFont(
+      "helvetica",
+      "bold"
+    );
+
+
+    pdf.setFontSize(
+      16
+    );
+
+
+    pdf.setTextColor(
+      35,
+      35,
+      35
+    );
+
+
+    pdf.text(
+      title,
+      boxX + 8,
+      y
+    );
+
+
+    y += 12;
+
+
+    // ========================================
+    // DISPLAY KEY / VALUE ROWS
+    // ========================================
+
+    rows.forEach(
+      (
+        row,
+        index
+      ) => {
+
+
+        const keyX =
+          boxX + 8;
+
+
+        const valueX =
+          boxX +
+          keyColumnWidth +
+          8;
+
+
+        // ====================================
+        // KEY
+        //
+        // Example:
+        //
+        // Product Type
+        // ====================================
+
+        pdf.setFont(
+          "helvetica",
+          "bold"
+        );
+
+
+        pdf.setFontSize(
+          10
+        );
+
+
+        pdf.setTextColor(
+          40,
+          40,
+          40
+        );
+
+
+        pdf.text(
+          row.keyLines,
+          keyX,
+          y
+        );
+
+
+        // ====================================
+        // VALUE
+        //
+        // Example:
+        //
+        // Modular Office Workstation
+        // ====================================
+
+        pdf.setFont(
+          "helvetica",
+          "normal"
+        );
+
+
+        pdf.setFontSize(
+          10
+        );
+
+
+        pdf.setTextColor(
+          90,
+          90,
+          90
+        );
+
+
+        pdf.text(
+          row.valueLines,
+          valueX,
+          y
+        );
+
+
+        // ====================================
+        // NEXT ROW
+        // ====================================
+
+        y +=
+          row.rowHeight;
+
+
+        // ====================================
+        // DIVIDER LINE
+        // ====================================
+
+        if (
+          index <
+          rows.length - 1
+        ) {
+
+          pdf.setDrawColor(
+            220,
+            220,
+            220
+          );
+
+
+          pdf.setLineWidth(
+            0.25
+          );
+
+
+          pdf.line(
+            boxX + 8,
+            y - 5,
+            boxX +
+              boxWidth -
+              8,
+            y - 5
+          );
+
+        }
+
+      }
+    );
+
+
+    return (
+      boxY +
+      totalHeight +
+      8
+    );
+
+  };
+
+
+  // ==========================================
+  // LOOP PRODUCTS
+  // ==========================================
+
+  for (
+    let productIndex = 0;
+    productIndex <
+    categoryProducts.length;
+    productIndex++
+  ) {
+
+
+    const product =
+      categoryProducts[
+        productIndex
+      ];
+
+
+    // ========================================
+    // ONE PRODUCT = ONE PAGE
+    // ========================================
+
+    if (
+      productIndex > 0
+    ) {
+
+      pdf.addPage();
+
+    }
+
+
+    let y = 15;
+
+
+    // ========================================
+    // CATEGORY NAME
+    // ========================================
+
+    const categoryTitle =
+      categoryName
+        .replace(
+          /-/g,
+          " "
+        )
+        .toUpperCase();
+
+
+    pdf.setFont(
+      "helvetica",
+      "normal"
+    );
+
+
+    pdf.setFontSize(
+      9
+    );
+
+
+    pdf.setTextColor(
+      100,
+      100,
+      100
+    );
+
+
+    pdf.text(
+      categoryTitle,
+      pageWidth / 2,
+      y,
+      {
+        align: "center",
+      }
+    );
+
+
+    y += 10;
+
+
+    // ========================================
+    // PRODUCT NAME
+    // ========================================
+
+    const productName =
+      formatValue(
+        product.name
+      );
+
+
+    pdf.setFont(
+      "helvetica",
+      "bold"
+    );
+
+
+    pdf.setFontSize(
+      18
+    );
+
+
+    pdf.setTextColor(
+      35,
+      35,
+      35
+    );
+
+
+    const productNameLines =
+      pdf.splitTextToSize(
+        productName,
+        contentWidth
+      );
+
+
+    pdf.text(
+      productNameLines,
+      pageWidth / 2,
+      y,
+      {
+        align: "center",
+      }
+    );
+
+
+    y +=
+      productNameLines.length *
+        7 +
+      7;
+
+
+    // ========================================
+    // PRODUCT IMAGE
+    // ========================================
+
+    let imageUrl:
+      | string
+      | null =
+      null;
+
+
+    if (
+      Array.isArray(
+        product.images
+      ) &&
+      product.images.length > 0
+    ) {
+
+      imageUrl =
+        product.images[0];
+
+    }
+
+
+    if (imageUrl) {
+
+      try {
+
+        const image =
+          await loadImage(
+            imageUrl
+          );
+
+
+        if (
+          image &&
+          image.naturalWidth > 0 &&
+          image.naturalHeight > 0
+        ) {
+
+          const canvas =
+            document.createElement(
+              "canvas"
+            );
+
+
+          const context =
+            canvas.getContext(
+              "2d"
+            );
+
+
+          if (context) {
+
+            canvas.width =
+              image.naturalWidth;
+
+
+            canvas.height =
+              image.naturalHeight;
+
+
+            context.drawImage(
+              image,
+              0,
+              0
+            );
+
+
+            const imageData =
+              canvas.toDataURL(
+                "image/jpeg",
+                0.9
+              );
+
+
+            const maxImageWidth =
+              contentWidth;
+
+
+            const maxImageHeight =
+              65;
+
+
+            let imageWidth =
+              maxImageWidth;
+
+
+            let imageHeight =
+              (
+                image.naturalHeight /
+                image.naturalWidth
+              ) *
+              imageWidth;
+
+
+            if (
+              imageHeight >
+              maxImageHeight
+            ) {
+
+              imageHeight =
+                maxImageHeight;
+
+
+              imageWidth =
+                (
+                  image.naturalWidth /
+                  image.naturalHeight
+                ) *
+                imageHeight;
+
+            }
+
+
+            const imageX =
+              (
+                pageWidth -
+                imageWidth
+              ) / 2;
+
+
+            pdf.addImage(
+              imageData,
+              "JPEG",
+              imageX,
+              y,
+              imageWidth,
+              imageHeight
+            );
+
+
+            y +=
+              imageHeight +
+              8;
+
+          }
+
+        }
+
+      } catch (error) {
+
+        console.error(
+          "Unable to load image:",
+          error
+        );
+
+      }
+
+    }
+
+
+    // ========================================
+    // DESCRIPTION
+    // ========================================
+
+    if (
+      product.description
+    ) {
+
+      const descriptionText =
+        formatValue(
+          product.description
+        );
+
+
+      if (
+        descriptionText
+      ) {
+
+
+        pdf.setFont(
+          "helvetica",
+          "bold"
+        );
+
+
+        pdf.setFontSize(
+          14
+        );
+
+
+        pdf.setTextColor(
+          35,
+          35,
+          35
+        );
+
+
+        pdf.text(
+          "Description",
+          margin,
+          y
+        );
+
+
+        y += 7;
+
+
+        pdf.setFont(
+          "helvetica",
+          "normal"
+        );
+
+
+        pdf.setFontSize(
+          9
+        );
+
+
+        pdf.setTextColor(
+          90,
+          90,
+          90
+        );
+
+
+        const descriptionLines =
+          pdf.splitTextToSize(
+            descriptionText,
+            contentWidth
+          );
+
+
+        pdf.text(
+          descriptionLines,
+          margin,
+          y
+        );
+
+
+        y +=
+          descriptionLines.length *
+            4.5 +
+          8;
+
+      }
+
+    }
+
+
+    // ========================================
+    // CUSTOMIZATION
+    // ========================================
+
+    const customization =
+      (product as any)
+        .customization;
+
+
+    const customizationEntries =
+      normalizeEntries(
+        customization
+      );
+
+
+    if (
+      customizationEntries.length >
+      0
+    ) {
+
+      y = drawInfoCard(
+        "Customization",
+        customization,
+        y
+      );
+
+    }
+
+
+    // ========================================
+    // SPECIFICATIONS
+    // ========================================
+
+    const specifications =
+      product.specifications;
+
+
+    const specificationEntries =
+      normalizeEntries(
+        specifications
+      );
+
+
+    if (
+      specificationEntries.length >
+      0
+    ) {
+
+      y = drawInfoCard(
+        "Specifications",
+        specifications,
+        y
+      );
+
+    }
+
+
+    // ========================================
+    // FOOTER
+    // ========================================
+
+    pdf.setFont(
+      "helvetica",
+      "normal"
+    );
+
+
+    pdf.setFontSize(
+      8
+    );
+
+
+    pdf.setTextColor(
+      130,
+      130,
+      130
+    );
+
+
+    pdf.text(
+      `${productIndex + 1} of ${categoryProducts.length}`,
+      pageWidth / 2,
+      pageHeight - 8,
+      {
+        align: "center",
+      }
+    );
+
+  }
+
+
+  // ==========================================
+  // CREATE PDF BLOB
+  // ==========================================
+
+  const pdfBlob =
+    pdf.output("blob");
+
+
+  const pdfUrl =
+    URL.createObjectURL(
+      pdfBlob
+    );
+
+
+  // ==========================================
+  // OPEN PDF PREVIEW
+  // ==========================================
+
+  previewWindow.location.href =
+    pdfUrl;
+
+
+  // ==========================================
+  // REMOVE BLOB URL
+  // ==========================================
+
+  setTimeout(() => {
+
+    URL.revokeObjectURL(
+      pdfUrl
+    );
+
+  }, 300000);
+
+};
   return (
     <div className="min-h-screen flex flex-col">
       {/* <Header /> */}
@@ -311,7 +1590,7 @@ export default function Catalog() {
         </Dialog>
 
 
-      <section className="bg-white py-20 overflow-hidden">
+      {/* <section className="bg-white py-20 overflow-hidden">
   <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
     <motion.div
       variants={container}
@@ -339,7 +1618,7 @@ export default function Catalog() {
       </motion.p>
     </motion.div>
   </div>
-</section>
+</section> */}
 
         <section className="py-8 border-b border-border">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -433,7 +1712,9 @@ export default function Catalog() {
                     return (
                       <div
                         key={firstProduct.id}
-                        onClick={() => navigate(`/catalog/${encodeURIComponent(categoryKey)}/browse`)}
+                        onClick={() => navigate(getProductCategoryPath(categoryKey), {
+                          state: { selectedSubcategory: categoryKey },
+                        })}
                         className="cursor-pointer"
                       >
 
@@ -454,28 +1735,50 @@ export default function Catalog() {
 
                             {/* Download button ON the image */}
                             {/* Download button ON the image (actually opens preview) */}
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleViewProduct(firstProduct.id);
-                              }}
-                              aria-label="Open catalog PDF"
-                              className="
-    absolute left-3 bottom-3 inline-flex items-center gap-2 px-3 py-2 rounded-md
+                          <button
+  onClick={(e) => {
+    e.stopPropagation();
+
+    openCategoryPdfPreview(
+      categoryKey,
+      categoryProducts
+    );
+  }}
+  aria-label="Open catalog PDF"
+  className="
+    absolute left-3 bottom-3
+    inline-flex items-center gap-2
+    px-3 py-2
+    rounded-md
     text-white text-sm font-semibold
-    bg-gradient-to-b from-[#6b1d1d] to-[#1c0b0b]
+    bg-gradient-to-b
+    from-[#6b1d1d]
+    to-[#1c0b0b]
     shadow-[inset_0_1px_0_rgba(255,255,255,.15),0_8px_16px_rgba(0,0,0,.35)]
-    hover:from-[#7f2323] hover:to-[#0f0707]
-    focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:ring-offset-2 focus-visible:ring-offset-black/30
-    active:translate-y-px backdrop-blur-sm transition-all
+    hover:from-[#7f2323]
+    hover:to-[#0f0707]
+    active:translate-y-px
+    backdrop-blur-sm
+    transition-all
   "
-                            >
-                              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                                  d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V4" />
-                              </svg>
-                              Download
-                            </button>
+>
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    className="h-4 w-4"
+    fill="none"
+    viewBox="0 0 24 24"
+    stroke="currentColor"
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={2}
+      d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V4"
+    />
+  </svg>
+
+  Download
+</button>
 
 
                           </div>

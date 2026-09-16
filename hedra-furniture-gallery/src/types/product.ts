@@ -234,14 +234,17 @@ export type ProductCategory =
   | "sectional-sofas"
   | "modular-sofas"
   | "lounge-sofas"
+  | "sofa-cum-bed"
   | "recliners"
   | "office-sofas"
   | "outdoor-sofas"
   | "coffee-tables"
+  | "console-tables"
   | "upholstered-beds"
   | "wooden-beds"
   | "beds-with-storage"
   | "childrens-beds"
+  | "kids-sofas"
   | "bedside-tables"
   | "four-seater-dining-tables"
   | "six-seater-dining-tables"
@@ -255,9 +258,10 @@ export type ProductCategory =
   | "armchairs"
   | "ottomans"
   | "poufs"
-  | "benches"
+  | "benches-diwans"
   | "bean-bags"
   | "executive-chairs"
+  | "boss-chairs"
   | "lounge-chairs"
   | "workstation-chairs"
   | "visitor-chairs"
@@ -265,7 +269,7 @@ export type ProductCategory =
   | "public-seatings"
   | "boss-tables"
   | "conference-room-tables"
-  | "worktables"
+  | "workstations"
   | "height-adjustable-tables"
   | "bed-headboards"
   | "table-bases"
@@ -283,16 +287,19 @@ export const PRODUCT_CATEGORIES = [
   { value: "sectional-sofas", label: "Sectional Sofas" },
   { value: "modular-sofas", label: "Modular Sofas" },
   { value: "lounge-sofas", label: "Lounge Sofas" },
+  { value: "sofa-cum-bed", label: "Sofa Cum Bed" },
   { value: "recliners", label: "Recliners" },
   { value: "office-sofas", label: "Office Sofas" },
   { value: "outdoor-sofas", label: "Outdoor Sofas" },
 
   { value: "coffee-tables", label: "Coffee Tables" },
+    { value: "console-tables", label: "Console Tables" },
 
   { value: "upholstered-beds", label: "Upholstered Beds" },
   { value: "wooden-beds", label: "Wooden Beds" },
   { value: "beds-with-storage", label: "Beds with Storage" },
   { value: "childrens-beds", label: "Children's Beds" },
+  { value: "kids-sofas", label: "Kid's Sofas" },
   { value: "bedside-tables", label: "Bedside Tables" },
 
   { value: "four-seater-dining-tables", label: "Four-Seater Dining Tables" },
@@ -310,10 +317,11 @@ export const PRODUCT_CATEGORIES = [
   { value: "armchairs", label: "Armchairs" },
   { value: "ottomans", label: "Ottomans" },
   { value: "poufs", label: "Poufs" },
-  { value: "benches", label: "Benches" },
+  { value: "benches-diwans", label: "Benches & Diwans" },
   { value: "bean-bags", label: "Bean Bags" },
 
   { value: "executive-chairs", label: "Executive Chairs" },
+  { value: "boss-chairs", label: "Boss Chairs" },
   { value: "lounge-chairs", label: "Lounge Chairs" },
   { value: "workstation-chairs", label: "Workstation Chairs" },
   { value: "visitor-chairs", label: "Visitor Chairs" },
@@ -322,7 +330,7 @@ export const PRODUCT_CATEGORIES = [
 
   { value: "boss-tables", label: "Boss Tables" },
   { value: "conference-room-tables", label: "Conference Room Tables" },
-  { value: "worktables", label: "Worktables" },
+  { value: "workstations", label: "Workstations" },
   { value: "height-adjustable-tables", label: "Height Adjustable Tables" },
 
   
@@ -335,7 +343,7 @@ export const PRODUCT_CATEGORIES = [
   { value: "gas-lifts", label: "Gas Lifts" },
   { value: "handles", label: "Handles" },
   { value: "chair-bases", label: "Chair Bases" },
-  { value: "pin-wheels", label: "Pin Wheels" },
+  { value: "pin-wheels", label: "Casters / Pinwheels" },
 ];
 
 

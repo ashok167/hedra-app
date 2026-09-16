@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, Navigate, useLocation } from 'react-router-dom';
-import { ArrowLeft, Heart, Share2, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ArrowLeft, Share2, ChevronLeft, ChevronRight } from 'lucide-react';
+import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -8,15 +9,13 @@ import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { useProducts } from '@/contexts/ProductContext';
 import { cn } from '@/lib/utils';
+import { getProductCategoryPath } from '@/lib/productCategoryRoute';
 
 export default function ProductDetail() {
   const { state } = useLocation();
-  const productId = state?.id;  // Get id from state passed by navigate
-
-  if (!productId) {
-    return <Navigate to="/catalog" replace />;
-  }
-  const { getProductById, products } = useProducts();
+  const { id: productIdFromUrl } = useParams();
+  const productId = productIdFromUrl ?? state?.id;
+  const { getProductById, products, loading } = useProducts();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   console.log("Product ID from URL:", productId);
   const product = getProductById(productId);
@@ -29,12 +28,24 @@ export default function ProductDetail() {
   }, [productId]);
 
   if (!productId) {
-    return <Navigate to="/catalog" replace />;
+    return <Navigate to="/product-category" replace />;
   }
 
   // const product = getProductById(id);
   // console.log(product); 
   // console.log('Fetched Product:', product);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex flex-col">
+        <Header />
+        <main className="flex-1 flex items-center justify-center">
+          <p className="text-muted-foreground">Loading product...</p>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
 
   if (!product) {
     return (
@@ -44,7 +55,7 @@ export default function ProductDetail() {
           <div className="text-center">
             <h1 className="text-2xl font-bold text-foreground mb-4">Product Not Found</h1>
             <p className="text-muted-foreground mb-6">The product you're looking for doesn't exist.</p>
-            <Link to="/catalog">
+            <Link to="/product-category">
               <Button>
                 <ArrowLeft className="mr-2 h-4 w-4" />
                 Back to Catalog
@@ -73,13 +84,41 @@ export default function ProductDetail() {
     );
   };
 
+  const handleShare = async () => {
+    const shareUrl = `${window.location.origin}/product-details/${product.id}`;
+    const shareData = {
+      title: product.name,
+      text: `Take a look at ${product.name}\n${shareUrl}`,
+      url: shareUrl,
+    };
+
+    try {
+      if (navigator.share) {
+        await navigator.share(shareData);
+        return;
+      }
+
+      await navigator.clipboard.writeText(shareUrl);
+      toast.success('Product link copied to clipboard');
+    } catch (error) {
+      if (error instanceof DOMException && error.name === 'AbortError') return;
+
+      try {
+        await navigator.clipboard.writeText(shareUrl);
+        toast.success('Product link copied to clipboard');
+      } catch {
+        toast.error('Unable to share this product');
+      }
+    }
+  };
+
   // Utility to concatenate class names
   const cn = (...classes: string[]) => {
     return classes.filter(Boolean).join(' ');
   };
 
 
-  const specPairs = React.useMemo(() => {
+  const specPairs = (() => {
     const raw = product.specifications;
     let specs: any = raw;
 
@@ -109,7 +148,8 @@ export default function ProductDetail() {
     }
 
     return [];
-  }, [product.specifications]);
+  })();
+  
 
 
 
@@ -124,10 +164,11 @@ export default function ProductDetail() {
             <nav className="flex items-center space-x-2 text-sm text-muted-foreground">
               <Link to="/" className="hover:text-primary transition-colors">Home</Link>
               <span>/</span>
-              <Link to="/catalog" className="hover:text-primary transition-colors">Catalog</Link>
+              <Link to="/product-category" className="hover:text-primary transition-colors">Catalog</Link>
               <span>/</span>
               <Link
-                to={`/catalog/${product.category}`}
+                to={getProductCategoryPath(product.category)}
+                state={{ selectedSubcategory: product.category }}
                 className="hover:text-primary transition-colors capitalize"
               >
                 {product.category.replace('-', ' ')}
@@ -241,15 +282,24 @@ export default function ProductDetail() {
 
                 {/* Actions */}
                 <div className="flex gap-4">
-                  <Link to="/contact" className="flex-1">
+                  <a
+                    href="https://wa.me/917603998893?text=Hi%21%20%0AI%20am%20interested%20in%20purchasing%20furniture%20from%20Edendek.%0AI%20have%20viewed%20your%20products%20at%20edendek.com"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex-1"
+                  >
                     <Button variant="hero" size="lg" className="w-full bg-[#b53e1d] hover:bg-[#9f3518] text-white">
-                      Request Quote
+                      Customize This Product 
                     </Button>
-                  </Link>
-                  <Button variant="outline" size="lg">
-                    <Heart className="h-5 w-5" />
-                  </Button>
-                  <Button variant="outline" size="lg">
+                  </a>
+                 
+                  <Button
+                    variant="outline"
+                    size="lg"
+                    onClick={handleShare}
+                    aria-label={`Share ${product.name}`}
+                    title="Share product"
+                  >
                     <Share2 className="h-5 w-5" />
                   </Button>
                 </div>
@@ -362,11 +412,11 @@ export default function ProductDetail() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                       <div>
                         <h4 className="font-medium text-gray-900 mb-2">Quality Guarantee</h4>
-                        <p className="text-gray-500">All our furniture comes with a comprehensive quality guarantee.</p>
+                        <p className="text-gray-500">Up to a 10-year warranty on selected materials.</p>
                       </div>
                       <div>
-                        <h4 className="font-medium text-gray-900 mb-2">Custom Options</h4>
-                        <p className="text-gray-500">Available for customization to fit your specific requirements.</p>
+                        <h4 className="font-medium text-gray-900 mb-2">Pricing</h4>
+                        <p className="text-gray-500">The above pricing varies based on the chosen material.</p>
                       </div>
                     </div>
                   </CardContent>
@@ -391,7 +441,7 @@ export default function ProductDetail() {
                 {relatedProducts.map((relatedProduct) => (
                   <Link
                     key={relatedProduct.id}
-                    to="/product"
+                    to={`/product-details/${encodeURIComponent(relatedProduct.id)}`}
                     state={{ id: relatedProduct.id }}
                     className="group"
                   >

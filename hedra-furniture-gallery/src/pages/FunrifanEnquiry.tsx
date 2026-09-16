@@ -213,7 +213,7 @@ export default function FunrifanEnquiry() {
                     className="flex items-center text-gray-500 hover:text-[#b53e1d]"
                   >
                     <span className="material-symbols-outlined mr-2">call</span>
-                    +91 99624 52447
+                    +91 76039 98893 
                   </a>
                 </div>
               </div>

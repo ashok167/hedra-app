@@ -2,15 +2,13 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { ProductProvider } from "@/contexts/ProductContext";
 import { AuthProvider } from "@/contexts/AuthContext";
 
 // User Pages
 import Index from "./pages/Index";
-import Catalog from "./pages/Catalog";
 import ProductPdfView from "./pages/ProductPdfView";
-import CategoryBrowse from "@/pages/CategoryBrowse";
 import ProductDetail from "./pages/ProductDetail";
 import HomeProjects from "./pages/HomeProjects";
 import HomeProjectDetails from "./pages/HomeProjectDetails";
@@ -67,11 +65,10 @@ const App = () => (
             <Routes>
               {/* User Routes */}
               <Route path="/" element={<Index />} />
-              <Route path="/catalog" element={<Catalog />} />
+              <Route path="/catalog/*" element={<Navigate to="/product-category" replace />} />
               <Route path="/product/:id" element={<ProductPdfView />} />
-              <Route path="/catalog/:category/browse" element={<CategoryBrowse />} />
-              <Route path="/catalog/:category" element={<Catalog />} />
               <Route path="/product" element={<ProductDetail />} />
+              <Route path="/product-details/:id" element={<ProductDetail />} />
               <Route path="/projects" element={<Projects />} />
               <Route path="/homeprojects" element={<HomeProjects />} />
               <Route path="/homeprojects/:id" element={<HomeProjectDetails />} />

@@ -46,7 +46,7 @@ export default function CategoryBrowse() {
                   {/* Click image => this page is already open; go to product page OR a preview route */}
                   <button
                     className="relative aspect-[4/3] overflow-hidden group w-full"
-                    onClick={() => navigate("/product", { state: { id: p.id } })}
+                    onClick={() => navigate(`/product-details/${encodeURIComponent(p.id)}`, { state: { id: p.id } })}
                     aria-label={`Open ${p.name}`}
                   >
                     <img
@@ -77,7 +77,7 @@ export default function CategoryBrowse() {
                         <Download className="h-4 w-4 mr-1" />
                         Brochure
                       </Button>
-                      <Button size="sm" onClick={() => navigate("/product", { state: { id: p.id } })}>
+                      <Button size="sm" onClick={() => navigate(`/product-details/${encodeURIComponent(p.id)}`, { state: { id: p.id } })}>
                         View
                       </Button>
                     </div> */}

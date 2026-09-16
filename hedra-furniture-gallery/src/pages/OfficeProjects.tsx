@@ -92,7 +92,7 @@ console.log("API Response:", response);
                 variants={item}
                 className="text-4xl md:text-5xl font-bold text-[#14294C] mb-4"
               >
-                Office Projects
+                Recent Office Projects
               </motion.h1>
 
               <motion.div
@@ -201,7 +201,7 @@ console.log("API Response:", response);
                 </button>
               </a>
 
-              <a href="/catalog">
+              <a href="/product-category">
                 <button className="border border-white text-white hover:bg-white hover:text-primary px-8 py-3 rounded-md font-semibold">
                   View Catalog
                 </button>

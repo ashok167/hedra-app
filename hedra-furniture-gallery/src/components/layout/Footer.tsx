@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Phone, Mail, MapPin, Facebook, Instagram, Linkedin } from 'lucide-react';
+import { Phone, Mail, MapPin, Facebook, Instagram, Star } from 'lucide-react';
 import edendekLogo from "../../assets/icons/300px.png";
 
 export function Footer() {
@@ -23,8 +23,7 @@ export function Footer() {
 
             <p className="mt-2 text-sm text-gray-900 leading-snug
                max-w-md mx-auto md:mx-0 md:max-w-[28ch] lg:max-w-[30ch]">
-              Creating exceptional furniture pieces that blend craftsmanship with modern design.
-              Your trusted partner for premium furniture solutions.
+              Thoughtfully designed, expertly crafted, and made to your vision.
             </p>
 
           </div>
@@ -34,7 +33,7 @@ export function Footer() {
             <h3 className="text-sm font-semibold text-[#14294C] uppercase tracking-wider">Quick Links</h3>
             <nav className="flex flex-col space-y-2">
               <Link to="/" className="text-gray-900 hover:text-[#b53e1d] transition-colors text-sm">Home</Link>
-              <Link to="/catalog" className="text-gray-900 hover:text-[#b53e1d] transition-colors text-sm">Product Catalog</Link>
+              <Link to="/product-category" className="text-gray-900 hover:text-[#b53e1d] transition-colors text-sm">Product Catalog</Link>
               <Link to="/projects" className="text-gray-900 hover:text-[#b53e1d] transition-colors text-sm">Our Projects</Link>
               <Link to="/services" className="text-gray-900 hover:text-[#b53e1d] transition-colors text-sm">Services</Link>
               <Link to="/about" className="text-gray-900 hover:text-[#b53e1d] transition-colors text-sm">About Us</Link>
@@ -66,33 +65,58 @@ export function Footer() {
   <div className="grid grid-cols-[22px,1fr] gap-x-3 gap-y-2 items-start">
     {/* Phone */}
     <Phone className="h-5 w-5 text-[#b53e1d] mt-0.5" />
-    <span className="text-sm text-gray-900"><a href="tel:+919962452447">+91 99624 52447</a></span>
+    <span className="text-sm text-gray-900"><a href="tel:+9176039 98893 ">+91 76039 98893 </a></span>
 
     {/* Email */}
     <Mail className="h-5 w-5 text-[#b53e1d] mt-0.5" />
     <span className="text-sm text-gray-900 break-all"><a href="mailto:info@edendek.com">info@edendek.com</a></span>
 
     {/* Address */}
+     {/* Location */}
     <MapPin className="h-5 w-5 text-[#b53e1d] mt-0.5" />
-    <address className="not-italic text-sm text-gray-900 leading-snug">
+    <a
+      href="https://maps.app.goo.gl/t4LMjSapWBUe9Fr3A"
+      target="_blank"
+      rel="noopener noreferrer"
+      className="text-sm text-gray-900 leading-snug hover:text-[#b53e1d] transition-colors"
+    >
       No: 126/1, Sivanthi Athithan Nagar,<br />
       Ambedkar Main Road,<br />
       Redhills, Chennai,<br />
       Tamil Nadu: 600 052
-    </address>
+    </a>
   </div>
 
   {/* Socials */}
   <div className="flex gap-3 pt-2">
-    <a href="#" aria-label="Facebook" className="flex h-11 w-11 items-center justify-center rounded-full border border-gray-200 text-gray-900 hover:border-[#b53e1d] hover:text-[#b53e1d] transition-colors">
-      <Facebook className="h-5 w-5" />
-    </a>
-    <a href="#" aria-label="Instagram" className="flex h-11 w-11 items-center justify-center rounded-full border border-gray-200 text-gray-900 hover:border-[#b53e1d] hover:text-[#b53e1d] transition-colors">
-      <Instagram className="h-5 w-5" />
-    </a>
-    <a href="#" aria-label="LinkedIn" className="flex h-11 w-11 items-center justify-center rounded-full border border-gray-200 text-gray-900 hover:border-[#b53e1d] hover:text-[#b53e1d] transition-colors">
-      <Linkedin className="h-5 w-5" />
-    </a>
+    <a
+  href="https://www.facebook.com/share/18LK7KGsk5/?mibextid=wwXIfr"
+  target="_blank"
+  rel="noopener noreferrer"
+  aria-label="Facebook"
+  className="flex h-11 w-11 items-center justify-center rounded-full border border-gray-200 text-gray-900 hover:border-[#b53e1d] hover:text-[#b53e1d] transition-colors"
+>
+  <Facebook className="h-5 w-5" />
+</a>
+    <a
+  href="https://www.instagram.com/edendekindia?igsi=YjRkY2tuM3gxenli"
+  target="_blank"
+  rel="noopener noreferrer"
+  aria-label="Instagram"
+  className="flex h-11 w-11 items-center justify-center rounded-full border border-gray-200 text-gray-900 hover:border-[#b53e1d] hover:text-[#b53e1d] transition-colors"
+>
+  <Instagram className="h-5 w-5" />
+</a>
+    <a
+  href="https://www.google.com/maps/place/Edendek/@13.1987191,80.1562263,1506m/data=!3m1!1e3!4m18!1m9!3m8!1s0x3a527d5e3b19b4b7:0x3654fea00e8b2ae4!2sEdendek!8m2!3d13.1986117!4d80.1586207!9m1!1b1!16s%2Fg%2F11zg29zxmh!3m7!1s0x3a527d5e3b19b4b7:0x3654fea00e8b2ae4!8m2!3d13.1986117!4d80.1586207!9m1!1b1!16s%2Fg%2F11zg29zxmh?entry=ttu&g_ep=EgoyMDI2MDkwMi4wIKXMDSoASAFQAw%3D%3D"
+  target="_blank"
+  rel="noopener noreferrer"
+  aria-label="Google Reviews"
+  title="Google Reviews"
+  className="flex h-11 w-11 items-center justify-center rounded-full border border-gray-200 text-gray-900 hover:border-[#b53e1d] hover:text-[#b53e1d] transition-colors"
+>
+  <Star className="h-5 w-5" />
+</a>
   </div>
 </div>
 

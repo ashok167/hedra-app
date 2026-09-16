@@ -97,7 +97,7 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
       {/* <Header /> */}
       <main className="flex-1">
         {/* Header Section */}
-        <section className="bg-white py-20">
+        {/* <section className="bg-white py-20">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <motion.div variants={container} initial="hidden" animate="show">
               <motion.h2
@@ -119,7 +119,7 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
               </motion.p>
             </motion.div>
           </div>
-        </section>
+        </section> */}
 
         {/* Divider */}
         <div className="w-full border-t border-gray-200" />

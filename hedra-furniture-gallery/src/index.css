@@ -11,6 +11,45 @@
 .hero-next::after {
   font-size: 28px;    /* ARROW ICON SIZE */
 }
+
+@media (max-width: 639px) {
+  .hero-prev::after,
+  .hero-next::after {
+    font-size: 18px;
+  }
+
+  .hero-pagination {
+    position: absolute;
+    bottom: 1rem !important;
+    left: 50% !important;
+    z-index: 20;
+    display: flex;
+    width: auto !important;
+    transform: translateX(-50%);
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+  }
+
+  .hero-pagination .swiper-pagination-bullet {
+    width: 0.55rem;
+    height: 0.55rem;
+    margin: 0 !important;
+    background: #d1d5db;
+    opacity: 0.8;
+  }
+
+  .hero-pagination .swiper-pagination-bullet-active {
+    background: #14294c;
+    opacity: 1;
+  }
+}
+
+@media (min-width: 640px) {
+  .hero-pagination {
+    display: none;
+  }
+}
 @layer base {
   :root {
     /* Background & Surface Colors */

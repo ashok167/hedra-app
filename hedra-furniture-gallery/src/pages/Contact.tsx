@@ -125,42 +125,74 @@ export default function Contact() {
                   </div>
 
                   <div className="space-y-6">
-                    <div className="flex items-start space-x-4">
-                      <div className="w-12 h-12 bg-[#b53e1d] rounded-lg flex items-center justify-center flex-shrink-0">
-                        <Phone className="h-6 w-6 text-primary-foreground" />
-                      </div>
-                      <div>
-                        <h3 className="font-semibold  text-[#14294C]  mb-1">Phone</h3>
-                        <p className="text-gray-900">+91 99624 52447</p>
-                        <p className="text-sm text-gray-900">Mon-Fri, 8am-6pm EST</p>
-                      </div>
-                    </div>
+{/* Phone */}
+<div className="flex items-start space-x-4">
+  <div className="w-12 h-12 bg-[#b53e1d] rounded-lg flex items-center justify-center flex-shrink-0">
+    <Phone className="h-6 w-6 text-primary-foreground" />
+  </div>
 
-                    <div className="flex items-start space-x-4">
-                      <div className="w-12 h-12 bg-[#14294C]  rounded-lg flex items-center justify-center flex-shrink-0">
-                        <Mail className="h-6 w-6 text-secondary-foreground" />
-                      </div>
-                      <div>
-                        <h3 className="font-semibold  text-[#14294C]  mb-1">Email</h3>
-                        <p className="text-gray-900">info@edendek.com</p>
-                        <p className="text-sm text-gray-900">We'll respond within 24 hours</p>
-                      </div>
-                    </div>
+  <div>
+    <h3 className="font-semibold text-[#14294C] mb-1">Phone</h3>
 
-                    <div className="flex items-start space-x-4">
-                      <div className="w-12 h-12 bg-[#b53e1d]  rounded-lg flex items-center justify-center flex-shrink-0">
-                        <MapPin className="h-6 w-6 text-primary-foreground" />
-                      </div>
-                      <div>
-                        <h3 className="font-semibold  text-[#14294C]  mb-1">Address</h3>
-                        <p className="text-gray-900">
-                          No: 126/1, Sivanthi Athithan Nagar,<br />
-                          Ambedkar Main Road,Redhills,<br />
-                          Chennai,Tamil Nadu: 600 052
-                        </p>
-                      </div>
-                    </div>
+    <a
+      href="tel:+917603998893"
+      className="text-gray-900 hover:text-[#b53e1d] transition-colors"
+    >
+      +91 76039 98893
+    </a>
 
+    <p className="text-sm text-gray-900">
+      Mon-Fri, 8am-6pm EST
+    </p>
+  </div>
+</div>
+
+
+{/* Email */}
+<div className="flex items-start space-x-4">
+  <div className="w-12 h-12 bg-[#14294C] rounded-lg flex items-center justify-center flex-shrink-0">
+    <Mail className="h-6 w-6 text-secondary-foreground" />
+  </div>
+
+  <div>
+    <h3 className="font-semibold text-[#14294C] mb-1">Email</h3>
+
+    <a
+      href="mailto:info@edendek.com"
+      className="text-gray-900 hover:text-[#b53e1d] transition-colors"
+    >
+      info@edendek.com
+    </a>
+
+    <p className="text-sm text-gray-900">
+      We'll respond within 24 hours
+    </p>
+  </div>
+</div>
+
+
+{/* Address */}
+<div className="flex items-start space-x-4">
+  <div className="w-12 h-12 bg-[#b53e1d] rounded-lg flex items-center justify-center flex-shrink-0">
+    <MapPin className="h-6 w-6 text-primary-foreground" />
+  </div>
+
+  <div>
+    <h3 className="font-semibold text-[#14294C] mb-1">Address</h3>
+
+    <a
+      href="https://maps.app.goo.gl/t4LMjSapWBUe9Fr3A"
+      target="_blank"
+      rel="noopener noreferrer"
+      className="text-gray-900 hover:text-[#b53e1d] transition-colors"
+    >
+      No: 126/1, Sivanthi Athithan Nagar,<br />
+      Ambedkar Main Road,<br />
+      Redhills, Chennai,<br />
+      Tamil Nadu: 600 052
+    </a>
+  </div>
+</div>
                     <div className="flex items-start space-x-4">
                       <div className="w-12 h-12 bg-[#14294C] rounded-lg flex items-center justify-center flex-shrink-0">
                         <Clock className="h-6 w-6 text-secondary-foreground" />
@@ -276,40 +308,47 @@ export default function Contact() {
                             <Send className="ml-2 h-5 w-5" />
                           </Button>
 
-                          <div className="flex items-center gap-3">
-                            {/* WhatsApp */}
-                            <a
-                              href="https://wa.me/919962452447"
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="w-11 h-11 rounded-full bg-[#25D366] hover:scale-110 transition flex items-center justify-center text-white"
-                              title="WhatsApp"
-                            >
-                              <FaWhatsapp size={22} />
-                            </a>
+<div className="flex items-center gap-3">
 
-                            {/* Instagram */}
-                            <a
-                              href="https://instagram.com/your_instagram_username"
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="w-11 h-11 rounded-full bg-gradient-to-br from-[#F58529] via-[#DD2A7B] to-[#8134AF] hover:scale-110 transition flex items-center justify-center text-white"
-                              title="Instagram"
-                            >
-                              <FaInstagram size={22} />
-                            </a>
+  {/* WhatsApp */}
+  <a
+    href="https://wa.me/917603998893 "
+    target="_blank"
+    rel="noopener noreferrer"
+    className="w-11 h-11 rounded-full bg-[#25D366] hover:scale-110 transition flex items-center justify-center text-white"
+    title="WhatsApp"
+    aria-label="WhatsApp"
+  >
+    <FaWhatsapp size={22} />
+  </a>
 
-                            {/* Facebook */}
-                            <a
-                              href="https://facebook.com/your_page_name"
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="w-11 h-11 rounded-full bg-[#1877F2] hover:scale-110 transition flex items-center justify-center text-white"
-                              title="Facebook"
-                            >
-                              <FaFacebookF size={20} />
-                            </a>
-                          </div>
+
+  {/* Instagram */}
+  <a
+    href="https://www.instagram.com/edendekindia?igsi=YjRkY2tuM3gxenli"
+    target="_blank"
+    rel="noopener noreferrer"
+    className="w-11 h-11 rounded-full bg-gradient-to-br from-[#F58529] via-[#DD2A7B] to-[#8134AF] hover:scale-110 transition flex items-center justify-center text-white"
+    title="Instagram"
+    aria-label="Instagram"
+  >
+    <FaInstagram size={22} />
+  </a>
+
+
+  {/* Facebook */}
+  <a
+    href="https://www.facebook.com/share/18LK7KGsk5/?mibextid=wwXIfr"
+    target="_blank"
+    rel="noopener noreferrer"
+    className="w-11 h-11 rounded-full bg-[#1877F2] hover:scale-110 transition flex items-center justify-center text-white"
+    title="Facebook"
+    aria-label="Facebook"
+  >
+    <FaFacebookF size={20} />
+  </a>
+
+</div>
                         </div>
 
                       </div>
@@ -322,28 +361,34 @@ export default function Contact() {
         </section>
 
         {/* Map Section */}
-        <section className="py-16 bg-muted/30">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-8">
-              <h2 className="text-3xl font-bold text-[#14294C] mb-4">Visit Our Showroom</h2>
-              <p className="text-gray-900">
-                Come see our craftsmanship firsthand at our showroom and workshop.
-              </p>
-            </div>
+       {/* Map Section */}
+<section className="py-16 bg-muted/30">
+  <div className="container mx-auto px-4 sm:px-6 lg:px-8">
 
-            <div className="aspect-[21/9] rounded-lg overflow-hidden bg-muted">
-              <div className="w-full h-full flex items-center justify-center">
-                <div className="text-center">
-                  <MapPin className="h-12 w-12 text-gray-500 mx-auto mb-4" />
-                  <p className="text-gray-500">Interactive map would be embedded here</p>
-                  <p className="text-sm text-gray-500 mt-2">
-                    123 Furniture Street, Design City, DC 12345
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
+    <div className="text-center mb-8">
+      <h2 className="text-3xl font-bold text-[#14294C] mb-4">
+        Visit Our Showroom
+      </h2>
+
+      <p className="text-gray-900">
+        Come see our craftsmanship firsthand at our showroom and workshop.
+      </p>
+    </div>
+
+    {/* Exact Edendek Location */}
+    <div className="aspect-[21/9] rounded-lg overflow-hidden bg-muted">
+      <iframe
+        src="https://www.google.com/maps?q=13.198969,80.158865&z=17&output=embed"
+        className="w-full h-full border-0"
+        loading="lazy"
+        allowFullScreen
+        referrerPolicy="no-referrer-when-downgrade"
+        title="Edendek Showroom Location"
+      />
+    </div>
+
+  </div>
+</section>
       </main>
 
       <Footer />

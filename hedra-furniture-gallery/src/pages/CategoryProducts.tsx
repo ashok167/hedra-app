@@ -357,6 +357,7 @@ const SUBCATEGORY_MAP: Record<string, { value: string; label: string }[]> = {
     { value: "sectional-sofas", label: "Sectional Sofas" },
     { value: "modular-sofas", label: "Modular Sofas" },
     { value: "lounge-sofas", label: "Lounge Sofas" },
+    { value: "sofa-cum-bed", label: "Sofa Cum Bed" },
     { value: "recliners", label: "Recliners" },
     { value: "office-sofas", label: "Office Sofas" },
     { value: "outdoor-sofas", label: "Outdoor Sofas" },
@@ -399,6 +400,7 @@ const SUBCATEGORY_MAP: Record<string, { value: string; label: string }[]> = {
   "kids-furniture": [
     { value: "kids-furniture", label: "All Kids Furniture" },
     { value: "childrens-beds", label: "Children's Beds" },
+    { value: "kids-sofas", label: "Kid's Sofas" },
     { value: "study-tables", label: "Study Tables" },
     { value: "study-chairs", label: "Study Chairs" },
   ],
@@ -426,6 +428,7 @@ const SUBCATEGORY_MAP: Record<string, { value: string; label: string }[]> = {
   "office-chairs": [
     { value: "office-chairs", label: "All Office Chairs" },
     { value: "executive-chairs", label: "Executive Chairs" },
+    { value: "boss-chairs", label: "Boss Chairs" },
     { value: "lounge-chairs", label: "Lounge Chairs" },
     { value: "workstation-chairs", label: "Workstation Chairs" },
     { value: "visitor-chairs", label: "Visitor Chairs" },
@@ -470,7 +473,7 @@ const SUBCATEGORY_MAP: Record<string, { value: string; label: string }[]> = {
     { value: "gas-lifts", label: "Gas Lifts" },
     { value: "handles", label: "Handles" },
     { value: "chair-bases", label: "Chair Base" },
-    { value: "pin-wheels", label: "Pin Wheels" },
+    { value: "pin-wheels", label: "Casters / Pinwheels" },
   ],
 
   // CATALOGUES
@@ -526,13 +529,27 @@ const CategoryProducts = () => {
 
   // thumbnails for each subcategory: slug → image url
   const [subThumbs, setSubThumbs] = useState<Record<string, string>>({});
+  const [subcategoriesLoading, setSubcategoriesLoading] = useState(true);
 
-  // fetch thumbnails dynamically (first product image in each subcategory)
+  useEffect(() => {
+    if (location.hash !== "#product-grid" || loading || subcategoriesLoading) return;
+
+    requestAnimationFrame(() => {
+      document.getElementById("product-grid")?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    });
+  }, [location.hash, selectedSubcategory, loading, subcategoriesLoading]);
+
+  // Fetch subcategory thumbnails immediately so the navigation row appears first.
   useEffect(() => {
     let cancelled = false;
     const run = async () => {
+      setSubcategoriesLoading(true);
       if (!subcats.length) {
         setSubThumbs({});
+        setSubcategoriesLoading(false);
         return;
       }
       try {
@@ -557,20 +574,17 @@ const CategoryProducts = () => {
                   "outdoor-sofas",
                 ];
 
-                let lastImage = PLACEHOLDER;
-
-                for (const cat of sofaCategories) {
-                  const data: Product[] = await apiGetRequest(
-                    `products/getProductsByCategory/${cat}`,
-                    token
-                  );
-
-                  if (data?.length) {
-                    lastImage =
-                      firstImageFrom(data[data.length - 1]?.imageUrl) ||
-                      lastImage;
-                  }
-                }
+                const sofaResults = await Promise.all(
+                  sofaCategories.map((cat) =>
+                    apiGetRequest(`products/getProductsByCategory/${cat}`, token)
+                  )
+                );
+                const firstAvailableCategory = sofaResults.find(
+                  (data) => Array.isArray(data) && data.length
+                );
+                const lastImage = firstAvailableCategory
+                  ? firstImageFrom(firstAvailableCategory[0]?.imageUrl) || PLACEHOLDER
+                  : PLACEHOLDER;
 
                 return [s.value, lastImage] as const;
               }
@@ -625,6 +639,7 @@ const CategoryProducts = () => {
               if (s.value === "kids-furniture") {
                 const kidsCategories = [
                   "childrens-beds",
+                  "kids-sofas",
                   "study-tables",
                   "study-chairs",
                 ];
@@ -702,6 +717,7 @@ const CategoryProducts = () => {
               if (s.value === "office-chairs") {
                 const categories = [
                   "executive-chairs",
+                  "boss-chairs",
                   "lounge-chairs",
                   "workstation-chairs",
                   "visitor-chairs",
@@ -801,13 +817,15 @@ const CategoryProducts = () => {
         }
       } catch {
         if (!cancelled) setSubThumbs({});
+      } finally {
+        if (!cancelled) setSubcategoriesLoading(false);
       }
     };
     run();
     return () => {
       cancelled = true;
     };
-  }, [familyKey]); // re-fetch when switching to a new family
+  }, [familyKey]);
 
   // fetch current list of products
   useEffect(() => {
@@ -878,6 +896,7 @@ const CategoryProducts = () => {
 
           const kidsCategories = [
             "childrens-beds",
+            "kids-sofas",
             "study-tables",
             "study-chairs",
           ];
@@ -930,6 +949,7 @@ const CategoryProducts = () => {
         else if (selectedSubcategory === "office-chairs") {
           const categories = [
             "executive-chairs",
+            "boss-chairs",
             "lounge-chairs",
             "workstation-chairs",
             "visitor-chairs",
@@ -1000,12 +1020,6 @@ const CategoryProducts = () => {
     fetchData();
   }, [category, selectedSubcategory]);
 
-  if (loading) {
-    return <div className="container mx-auto px-4 py-10">Loading...</div>;
-  }
-
-
-
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
@@ -1034,7 +1048,7 @@ const CategoryProducts = () => {
           : "[grid-template-columns:repeat(auto-fit,minmax(120px,1fr))] grid gap-3"
       }
     >
-      {subcats.map((s) => {
+      {subcats.map((s, index) => {
         const active = selectedSubcategory === s.value;
         const img = subThumbs[s.value] || PLACEHOLDER;
         const isSingle = subcats.length === 1;
@@ -1042,7 +1056,17 @@ const CategoryProducts = () => {
           <button
             key={s.value}
             type="button"
-            onClick={() => setSelectedSubcategory(s.value)}
+           onClick={() => {
+  if (s.value === "outdoor-sofas") {
+    navigate("/outdoor-furniture", {
+      state: {
+        selectedSubcategory: "outdoor-sofas",
+      },
+    });
+  } else {
+    setSelectedSubcategory(s.value);
+  }
+}}
             className={`text-left rounded-md border bg-white overflow-hidden transition hover:shadow-md focus:outline-none ${isSingle ? "w-[160px]" : ""
               } ${active ? "border-primary" : "border-gray-200"}`}
           >
@@ -1050,6 +1074,9 @@ const CategoryProducts = () => {
               <img
                 src={img}
                 alt={s.label}
+                loading={index < 6 ? "eager" : "lazy"}
+                fetchPriority={index < 6 ? "high" : "auto"}
+                decoding="async"
                 className="h-full w-full object-cover"
               />
             </div>
@@ -1066,25 +1093,31 @@ const CategoryProducts = () => {
 )}
 
         {/* Product Grid */}
-        {products.length === 0 ? (
+        <div id="product-grid" className="scroll-mt-20">
+        {loading || subcategoriesLoading ? (
+          <p className="text-muted-foreground">Loading products...</p>
+        ) : products.length === 0 ? (
           <p className="text-muted-foreground">No products found in {category}.</p>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {products.map((p) => {
+            {products.map((p, index) => {
               const firstImage = firstImageFrom(p.imageUrl) || PLACEHOLDER;
               return (
                 <div
                   key={p.id}
                   className="group cursor-pointer"
-                  onClick={() => navigate("/product", { state: { id: p.id } })}
+                  onClick={() => navigate(`/product-details/${encodeURIComponent(p.id)}`, { state: { id: p.id } })}
                   role="button"
                   tabIndex={0}
-                  onKeyDown={(e) => e.key === "Enter" && navigate("/product", { state: { id: p.id } })}
+                  onKeyDown={(e) => e.key === "Enter" && navigate(`/product-details/${encodeURIComponent(p.id)}`, { state: { id: p.id } })}
                 >
                   <div className="aspect-[4/3] overflow-hidden rounded-lg border bg-white">
                     <img
                       src={firstImage}
                       alt={p.name}
+                      loading="lazy"
+                      fetchPriority="low"
+                      decoding="async"
                       onError={(e) => ((e.currentTarget.src = PLACEHOLDER))}
                       className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
                     />
@@ -1100,6 +1133,7 @@ const CategoryProducts = () => {
             })}
           </div>
         )}
+        </div>
       </main>
 
       <Footer />

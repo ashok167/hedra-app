@@ -164,11 +164,11 @@
 //       src: furnitureHero,
 //       alt: "Modern living room",
 //       caption: "Modern Comfort • Redefined",
-//       cta: { label: "Explore Catalog", href: "/catalog" },
+//       cta: { label: "Explore Catalog", href: "/product-category" },
 //     },
 //   },
 //   // { name: "Projects", href: "/projects" },
-//   // { name: "Catalog", href: "/catalog" },
+//   // { name: "Catalog", href: "/product-category" },
 //   // { name: "Services", href: "/services" },
 //   {
 //     name: "Projects",
@@ -745,6 +745,10 @@ const navigation = [
                     },
                   },
                   { name: "Coffee Tables", href: "/coffee-tables" },
+                   {
+      name: "Console Tables",
+      href: "/console-tables",
+    },
                 ],
               },
               {
@@ -771,6 +775,14 @@ const navigation = [
                       selectedSubcategory: "childrens-beds",
                     },
                   },
+
+    {
+      name: "Kid's Sofas",
+      href: "/kids-furniture",
+      state: {
+        selectedSubcategory: "kids-sofas",
+      },
+    },
                   {
                     name: "Study Tables",
                     href: "/kids-furniture",
@@ -792,7 +804,7 @@ const navigation = [
                 items: [
                   {
                     name: "Outdoor Sofas",
-                    href: "/sofa",
+                    href: "/outdoor-furniture",
                     state: { selectedSubcategory: "outdoor-sofas" },
                   },
                   {
@@ -832,10 +844,10 @@ const navigation = [
                     state: { selectedSubcategory: "poufs" },
                   },
                   {
-                    name: "Benches",
-                    href: "/accent-furniture",
-                    state: { selectedSubcategory: "benches" },
-                  },
+  name: "Benches & Diwans",
+  href: "/accent-furniture",
+  state: { selectedSubcategory: "benches-diwans" },
+},
                   {
                     name: "Bean Bags",
                     href: "/accent-furniture",
@@ -861,6 +873,11 @@ const navigation = [
                     href: "/office-chairs",
                     state: { selectedSubcategory: "executive-chairs" },
                   },
+                   {
+      name: "Boss Chairs",
+      href: "/office-chairs",
+      state: { selectedSubcategory: "boss-chairs" },
+    },
                   {
                     name: "Lounge Chairs",
                     href: "/office-chairs",
@@ -903,10 +920,10 @@ const navigation = [
                     state: { selectedSubcategory: "conference-room-tables" },
                   },
                   {
-                    name: "Worktables",
-                    href: "/office-tables",
-                    state: { selectedSubcategory: "worktables" },
-                  },
+  name: "Workstations",
+  href: "/office-tables",
+  state: { selectedSubcategory: "workstations" },
+},
                   {
                     name: "Height Adjustable Tables",
                     href: "/office-tables",
@@ -959,8 +976,12 @@ const navigation = [
                   { name: "Table Bases", href: "/spares", state: { selectedSubcategory: "table-bases" } },
                   { name: "Gas Lifts", href: "/spares", state: { selectedSubcategory: "gas-lifts" } },
                   { name: "Handles", href: "/spares", state: { selectedSubcategory: "handles" } },
-                  { name: "Chair Base", href: "/spares", state: { selectedSubcategory: "chair-base" } },
-                  { name: "Pin Wheels", href: "/spares", state: { selectedSubcategory: "pin-wheels" } },
+{
+  name: "Chair Bases",
+  href: "/spares",
+  state: { selectedSubcategory: "chair-bases" },
+},
+                  { name: "Casters / Pinwheels", href: "/spares", state: { selectedSubcategory: "pin-wheels" } },
                   { name: "Sofa Fabric", href: "/chooseupholstery", state: { selectedSubcategory: "sofa-fabric" } },
                 ],
               },
@@ -973,7 +994,7 @@ const navigation = [
       src: furnitureHero,
       alt: "Modern living room",
       caption: "Modern Comfort • Redefined",
-      cta: { label: "Explore Catalog", href: "/catalog" },
+      cta: { label: "Explore Catalog", href: "/product-category" },
     },
   },
 
@@ -1000,7 +1021,19 @@ const navigation = [
     ],
   },
 
-  { name: "About", href: "/about" },
+ {
+  name: "About",
+  dropdown: [
+    {
+      name: "Our Story",
+      href: "/about",
+    },
+    {
+      name: "Our Services",
+      href: "/services",
+    },
+  ],
+},
   { name: "Contact", href: "/contact" },
 ];
 
@@ -1164,11 +1197,11 @@ const DesktopUtilities = () => (
   <div className="flex items-center justify-end">
     <div className="hidden lg:flex flex-col items-end leading-tight whitespace-nowrap">
       <a
-        href="tel:+919962452447"
+        href="tel:+91 76039 98893 "
         className="flex items-center gap-2 mr-3 text-sm text-gray-700 hover:text-[#14294C]"
       >
         <Phone className="h-4 w-4" />
-        <span>+91 99624 52447</span>
+        <span>+91 76039 98893 </span>
       </a>
 
       <a
@@ -1463,14 +1496,26 @@ export function Header() {
                             </div>,
                             ...section.groups.flatMap((group: any) => [
                               group.label && (
-                                <div key={group.label} className="pt-1 pb-0.5 text-[11px] font-semibold text-gray-700 tracking-wide">
-                                  {group.label}
-                                </div>
+                                group.href ? (
+                                  <Link
+                                    key={group.label}
+                                    to={`${group.href}#product-grid`}
+                                    state={group.state}
+                                    onClick={() => { setMobileMenuOpen(false); setOpenMobileGroup(null); }}
+                                    className="flex min-h-10 items-center rounded-lg px-3 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-50 hover:text-primary"
+                                  >
+                                    {group.label}
+                                  </Link>
+                                ) : (
+                                  <div key={group.label} className="pt-1 pb-0.5 text-[11px] font-semibold text-gray-700 tracking-wide">
+                                    {group.label}
+                                  </div>
+                                )
                               ),
                               ...group.items.map((it: any) => (
                                 <Link
-                                  key={it.href}
-                                  to={it.href}
+                                  key={`${it.href}-${it.name}`}
+                                  to={`${it.href}#product-grid`}
                                   state={it.state}
                                   onClick={() => { setMobileMenuOpen(false); setOpenMobileGroup(null); }}
                                   className="flex min-h-10 items-center rounded-lg px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 hover:text-primary"

@@ -81,14 +81,14 @@ export default function ProductPdfView() {
 
       window.open(url, "_blank");
 
-      navigate("/catalog", { replace: true });
+      navigate("/product-category", { replace: true });
     };
 
     generatePdf();
   }, [product, navigate]);
 
   if (!productId || !product) {
-    return <Navigate to="/catalog" replace />;
+    return <Navigate to="/product-category" replace />;
   }
 console.log(product.specifications);
  let specPairs: [string, string][] = [];
@@ -266,7 +266,10 @@ try {
 
 
 
-            <div
+            <a
+              href="https://wa.me/917603998893?text=Hi%21%20%0AI%20am%20interested%20in%20purchasing%20furniture%20from%20Edendek.%0AI%20have%20viewed%20your%20products%20at%20edendek.com"
+              target="_blank"
+              rel="noopener noreferrer"
               style={{
                 marginTop: "25px",
                 background: "#C75A22",
@@ -276,10 +279,12 @@ try {
                 borderRadius: "8px",
                 fontWeight: 600,
                 fontSize: "15px",
+                display: "block",
+                textDecoration: "none",
               }}
             >
-              Request Quote
-            </div>
+              Customize This Product 
+            </a>
 
           </div>
         </div>

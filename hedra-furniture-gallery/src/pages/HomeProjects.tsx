@@ -91,7 +91,7 @@ export default function HomeProjects() {
                 variants={item}
                 className="text-4xl md:text-5xl font-bold text-[#14294C] mb-4"
               >
-                Home Projects
+                Recent Home Projects
               </motion.h1>
 
               <motion.div
@@ -198,7 +198,7 @@ export default function HomeProjects() {
                 </button>
               </a>
 
-              <a href="/catalog">
+              <a href="/product-category">
                 <button className="border border-white text-white hover:bg-white hover:text-primary px-8 py-3 rounded-md font-semibold">
                   View Catalog
                 </button>
@@ -414,7 +414,7 @@ export default function HomeProjects() {
 //                 </button>
 //               </a>
 
-//               <a href="/catalog">
+//               <a href="/product-category">
 //                 <button className="border border-white text-white hover:bg-white hover:text-primary px-8 py-3 rounded-md font-semibold">
 //                   View Catalog
 //                 </button>

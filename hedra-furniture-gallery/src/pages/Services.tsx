@@ -114,38 +114,55 @@ export default function Services() {
               </p>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-              {[
-                {
-                  step: '01',
-                  title: 'Consultation',
-                  description: 'Initial discussion to understand your needs, preferences, and budget.'
-                },
-                {
-                  step: '02',
-                  title: 'Design',
-                  description: 'Create detailed designs and 3D visualizations for your approval.'
-                },
-                {
-                  step: '03',
-                  title: 'Crafting',
-                  description: 'Expert craftsmen bring your design to life using premium materials.'
-                },
-                {
-                  step: '04',
-                  title: 'Delivery',
-                  description: 'Professional delivery and installation to complete your project.'
-                }
-              ].map((process, index) => (
-                <div key={index} className="text-center">
-                  <div className="w-16 h-16 bg-gradient-secondary rounded-full flex items-center justify-center mx-auto mb-4">
-                    <span className="text-2xl font-bold text-secondary-foreground">{process.step}</span>
-                  </div>
-                  <h3 className="text-xl font-semibold text-foreground mb-3">{process.title}</h3>
-                  <p className="text-muted-foreground">{process.description}</p>
-                </div>
-              ))}
-            </div>
+           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+  {[
+    {
+      step: "01",
+      title: "Consultation",
+      description:
+        "We understand your space, requirements, preferences and budget through consultation and site measurement where required.",
+    },
+    {
+      step: "02",
+      title: "Crafting",
+      description:
+        "Using carefully selected materials, our skilled craftsmen manufacture each piece in-house, combining expert craftsmanship with quality construction.",
+    },
+    {
+      step: "03",
+      title: "Quality Check",
+      description:
+        "Every piece undergoes thorough quality checks for construction, finishing, functionality, and overall workmanship before dispatch.",
+    },
+    {
+      step: "04",
+      title: "Delivery & Installation",
+      description:
+        "We safely deliver, assemble and install the finished furniture at your location.",
+    },
+  ].map((process, index) => (
+    <div key={index} className="text-center flex flex-col items-center">
+      
+      {/* Step Number */}
+      <div className="w-16 h-16 bg-gradient-secondary rounded-full flex items-center justify-center mx-auto mb-4">
+        <span className="text-2xl font-bold text-secondary-foreground">
+          {process.step}
+        </span>
+      </div>
+
+      {/* Title */}
+      <h3 className="text-xl font-semibold text-foreground mb-3">
+        {process.title}
+      </h3>
+
+      {/* Description */}
+      <p className="text-muted-foreground text-base leading-7 max-w-xs min-h-[140px]">
+        {process.description}
+      </p>
+
+    </div>
+  ))}
+</div>
           </div>
         </section>
 
@@ -165,11 +182,14 @@ export default function Services() {
                   Start Your Project
                 </Button>
               </a>
-              <a href="/catalog">
-                <Button variant="outline" size="lg" className="w-full sm:w-auto border-white text-white hover:bg-white hover:text-primary">
-                  View Our Work
-                </Button>
-              </a>
+               <a href="/product-category">
+    <Button
+      size="lg"
+      className="w-full sm:w-auto bg-[#8B5E3C] text-white border border-[#8B5E3C] hover:bg-[#8B5E3C] hover:text-white"
+    >
+      View Our Work
+    </Button>
+  </a>
             </div>
           </div>
         </section>
